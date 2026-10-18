@@ -37,6 +37,11 @@
   --color-avatar-peach: #f2937a;
   --color-avatar-sky: #a9d9e8;
   --color-avatar-sky-fg: #1f7a93;
+
+  /* Photo placeholder */
+  --color-photo-dashed: #dbcdba;
+  --color-photo-bg: #f4ece1;
+  --color-photo-fg: #b0a290;
 }
 
 @theme inline {
