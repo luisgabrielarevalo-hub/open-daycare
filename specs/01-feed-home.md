@@ -1,6 +1,6 @@
 # SPEC 01 — Home: feed de la guardería
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** —
 > **Fecha:** 2026-10-18
 > **Objetivo:** Implementar `feed.dc.html` como home (`/`), replicando su diseño visual con Tailwind v4 y componentes, sin backend.
