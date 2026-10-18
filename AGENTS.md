@@ -40,3 +40,12 @@ A daycare (guardería) web app to be implemented from the design prototypes in `
 
 - Context7: use it to pull current Next.js/framework docs instead of relying on training data.
 - Playwright: screenshots and any Playwright output go in `.playwright-mcp/` (gitignored).
+
+## Spec Driven Development
+
+- /spec Usaremos estabilidad para crear las especificaciones. 
+- /spec-impl Usaremos esta habilidad para implementar las especificaciones. 
+
+## Reglas de código
+
+- Usar código limpio, nombres, funciones y variables en inglés
