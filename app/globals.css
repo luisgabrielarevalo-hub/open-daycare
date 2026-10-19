@@ -39,6 +39,33 @@
   --color-avatar-peach: #f2937a;
   --color-avatar-sky: #a9d9e8;
   --color-avatar-sky-fg: #1f7a93;
+  --color-avatar-pink: #f4b8cc;
+  --color-avatar-pink-fg: #c44a7a;
+  --color-avatar-green: #b9dec4;
+  --color-avatar-green-fg: #3e8b62;
+  --color-avatar-yellow: #f4dc8e;
+  --color-avatar-yellow-fg: #9a7b1e;
+  --color-avatar-purple: #c9b6e8;
+  --color-avatar-purple-fg: #7b5fc0;
+  --color-avatar-blue: #a9c7e8;
+
+  /* Child tags */
+  --color-tag-allergy-bg: #fbd8cc;
+  --color-tag-allergy-fg: #d9684a;
+  --color-tag-link-bg: #f9d2de;
+  --color-tag-link-fg: #c56486;
+
+  /* Parent link status */
+  --color-status-active-bg: #cfebd8;
+  --color-status-active-fg: #3e9b6c;
+  --color-status-pending-bg: #f7e7a6;
+  --color-status-pending-fg: #9a7b1e;
+
+  /* Allergy alert box */
+  --color-alert-bg: #fbdad6;
+  --color-alert-icon-bg: #f4a8a0;
+  --color-alert-title: #c5413a;
+  --color-alert-text: #b25249;
 
   /* Photo placeholder */
   --color-photo-dashed: #dbcdba;

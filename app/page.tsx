@@ -7,7 +7,7 @@ export default function Home() {
   const firstName = staffProfile.name.split(" ")[0];
 
   return (
-    <AppShell profile={staffProfile}>
+    <AppShell profile={staffProfile} activeNav="feed">
       <div className="mx-auto w-full max-w-[760px] px-10 pt-[34px] pb-20">
         <div className="mb-6">
           <div className="mb-1 text-[12.5px] font-extrabold tracking-[0.8px] text-coral-deep-light">

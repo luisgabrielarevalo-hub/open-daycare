@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { Sidebar, type NavKey } from "@/components/layout/Sidebar";
 import { CloseIcon, MenuIcon } from "@/components/ui/icons";
 import type { StaffProfile } from "@/lib/data";
 
 type AppShellProps = {
   profile: StaffProfile;
+  activeNav: NavKey;
   children: ReactNode;
 };
 
-export function AppShell({ profile, children }: AppShellProps) {
+export function AppShell({ profile, activeNav, children }: AppShellProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       </header>
 
       <div className="hidden lg:sticky lg:top-0 lg:block lg:h-screen">
-        <Sidebar profile={profile} />
+        <Sidebar profile={profile} activeNav={activeNav} />
       </div>
 
       {isDrawerOpen ? (
@@ -62,7 +63,7 @@ export function AppShell({ profile, children }: AppShellProps) {
             >
               <CloseIcon />
             </button>
-            <Sidebar profile={profile} />
+            <Sidebar profile={profile} activeNav={activeNav} />
           </div>
         </div>
       ) : null}
