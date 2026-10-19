@@ -15,7 +15,16 @@ export type Post = {
   photoLabel?: string;
 };
 
-export const staffProfile = {
+export type StaffProfile = {
+  name: string;
+  role: string;
+  initial: string;
+  room: string;
+  childCount: number;
+  dateLabel: string;
+};
+
+export const staffProfile: StaffProfile = {
   name: "Caro Giménez",
   role: "Maestra · Soles",
   initial: "C",
