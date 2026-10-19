@@ -1,6 +1,6 @@
 # SPEC 01 — Home: feed de la guardería
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** —
 > **Fecha:** 2026-10-18
 > **Objetivo:** Implementar `feed.dc.html` como home (`/`), replicando su diseño visual con Tailwind v4 y componentes, sin backend.
@@ -91,15 +91,15 @@ Tokens de color en `app/globals.css` (`@theme`):
 
 ## Criterios de aceptación
 
-- [ ] `/` carga sin errores en consola.
-- [ ] Aparecen los 3 posts en orden logro, actividad, anuncio, con sus chips y colores correctos.
-- [ ] Fondo `#F6ECDF`, cards `#FFFDF9` y coral en el ítem activo del nav.
-- [ ] Fredoka en títulos y nombres de niño; Nunito en el resto.
-- [ ] En ≥1024px la sidebar es fija de 248px y el layout es de dos columnas.
-- [ ] Por debajo de 1024px la sidebar se oculta y un botón hamburguesa abre un drawer con backdrop; cierra con X, backdrop o Escape.
-- [ ] Todos los enlaces/botones usan `href="#"` y no navegan.
-- [ ] Like, comentar y Editar no disparan ninguna acción.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `/` carga sin errores en consola.
+- [x] Aparecen los 3 posts en orden logro, actividad, anuncio, con sus chips y colores correctos.
+- [x] Fondo `#F6ECDF`, cards `#FFFDF9` y coral en el ítem activo del nav.
+- [x] Fredoka en títulos y nombres de niño; Nunito en el resto.
+- [x] En ≥1024px la sidebar es fija de 248px y el layout es de dos columnas.
+- [x] Por debajo de 1024px la sidebar se oculta y un botón hamburguesa abre un drawer con backdrop; cierra con X, backdrop o Escape.
+- [x] Todos los enlaces/botones usan `href="#"` y no navegan.
+- [x] Like, comentar y Editar no disparan ninguna acción.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisiones tomadas y descartadas
 
