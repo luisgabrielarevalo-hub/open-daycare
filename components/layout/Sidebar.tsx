@@ -1,3 +1,5 @@
+import Link from "next/link";
+import type { AnchorHTMLAttributes } from "react";
 import type { StaffProfile } from "@/lib/data";
 import {
   BellIcon,
@@ -18,6 +20,26 @@ const navItems = [
   { key: "account", label: "Mi cuenta", icon: UserIcon, href: "#" },
 ] satisfies { key: NavKey; label: string; icon: typeof HomeIcon; href: string }[];
 
+type SidebarLinkProps = {
+  href: string;
+} & AnchorHTMLAttributes<HTMLAnchorElement>;
+
+function SidebarLink({ href, children, ...props }: SidebarLinkProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} {...props}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  );
+}
+
 type SidebarProps = {
   profile: StaffProfile;
   activeNav: NavKey;
@@ -26,7 +48,7 @@ type SidebarProps = {
 export function Sidebar({ profile, activeNav }: SidebarProps) {
   return (
     <aside className="flex h-full w-[248px] flex-none flex-col border-r border-border bg-paper px-4 py-6">
-      <a
+      <SidebarLink
         href="/"
         className="flex items-center gap-[11px] px-2 pt-1 pb-[22px]"
       >
@@ -41,7 +63,7 @@ export function Sidebar({ profile, activeNav }: SidebarProps) {
             {profile.room}
           </div>
         </div>
-      </a>
+      </SidebarLink>
 
       <a
         href="#"
@@ -53,7 +75,7 @@ export function Sidebar({ profile, activeNav }: SidebarProps) {
 
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map(({ key, label, icon: NavIcon, href }) => (
-          <a
+          <SidebarLink
             key={key}
             href={href}
             aria-current={key === activeNav ? "page" : undefined}
@@ -65,7 +87,7 @@ export function Sidebar({ profile, activeNav }: SidebarProps) {
           >
             <NavIcon />
             {label}
-          </a>
+          </SidebarLink>
         ))}
       </nav>
 
