@@ -1,6 +1,6 @@
 # SPEC 02 — Niños: listado y perfil del niño
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (AppShell, Sidebar, tokens en `globals.css`)
 > **Fecha:** 2026-10-19
 > **Objetivo:** Implementar `ninos.dc.html` en `/kids` y `perfil-nino.dc.html` en `/kids/[slug]`, replicando su diseño con Tailwind v4 y componentes, sin backend.
@@ -116,21 +116,21 @@ Tokens nuevos en `app/globals.css` (`@theme`):
 
 ## Criterios de aceptación
 
-- [ ] `/kids` y `/kids/mateo-fernandez` cargan sin errores en consola.
-- [ ] El sidebar resalta "Niños" en ambas rutas; "Feed" sigue resaltando en `/`.
-- [ ] `/kids` muestra cabecera "GESTIÓN / Niños", botón "Agregar niño", buscador y "SALA SOLES · 8 niños".
-- [ ] Se listan los 8 niños en grid de 2 columnas con sus nombres, edades y conteo de padres correctos.
-- [ ] Las tarjetas muestran chip en Mateo (MANÍ), Valentina (VINCULAR) y Tomás (LACTOSA), y chevron en el resto.
-- [ ] El buscador filtra las tarjetas por nombre en tiempo real.
-- [ ] Cada tarjeta navega a `/kids/[slug]` correcto.
-- [ ] El perfil muestra avatar, nombre, "3 años · Sala Soles", botón "Editar" y enlace "Volver a Niños".
-- [ ] La caja de alergias y la tabla (fecha de nacimiento, sala, ingreso) coinciden con el mockup.
-- [ ] "PADRES VINCULADOS" lista padres con sus estados (ACTIVA / PENDIENTE) y el enlace "Vincular otro padre".
-- [ ] `/kids/mateo-fernandez` muestra nacimiento "12 mar 2022", sala "Soles" e ingreso "feb 2025".
-- [ ] Un slug inexistente (ej. `/kids/no-existe`) devuelve 404 con `notFound()`.
-- [ ] "Agregar niño", "Editar", "Vincular otro padre" y "Resumen del día" usan `href="#"` y no navegan.
-- [ ] Fondo `#F6ECDF`, cards `#FFFDF9`, Fredoka en títulos/nombres y Nunito en el resto.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `/kids` y `/kids/mateo-fernandez` cargan sin errores en consola.
+- [x] El sidebar resalta "Niños" en ambas rutas; "Feed" sigue resaltando en `/`.
+- [x] `/kids` muestra cabecera "GESTIÓN / Niños", botón "Agregar niño", buscador y "SALA SOLES · 8 niños".
+- [x] Se listan los 8 niños en grid de 2 columnas con sus nombres, edades y conteo de padres correctos.
+- [x] Las tarjetas muestran chip en Mateo (MANÍ), Valentina (VINCULAR) y Tomás (LACTOSA), y chevron en el resto.
+- [x] El buscador filtra las tarjetas por nombre en tiempo real.
+- [x] Cada tarjeta navega a `/kids/[slug]` correcto.
+- [x] El perfil muestra avatar, nombre, "3 años · Sala Soles", botón "Editar" y enlace "Volver a Niños".
+- [x] La caja de alergias y la tabla (fecha de nacimiento, sala, ingreso) coinciden con el mockup.
+- [x] "PADRES VINCULADOS" lista padres con sus estados (ACTIVA / PENDIENTE) y el enlace "Vincular otro padre".
+- [x] `/kids/mateo-fernandez` muestra nacimiento "12 mar 2022", sala "Soles" e ingreso "feb 2025".
+- [x] Un slug inexistente (ej. `/kids/no-existe`) devuelve 404 con `notFound()`.
+- [x] "Agregar niño", "Editar", "Vincular otro padre" y "Resumen del día" usan `href="#"` y no navegan.
+- [x] Fondo `#F6ECDF`, cards `#FFFDF9`, Fredoka en títulos/nombres y Nunito en el resto.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisiones tomadas y descartadas
 
