@@ -29,6 +29,16 @@ export function KidsDirectory() {
         />
       </div>
 
+      <div className="mb-3.5 flex items-center gap-3">
+        <span className="text-[12.5px] font-extrabold tracking-[0.8px] text-ink">
+          SALA SOLES
+        </span>
+        <span className="text-[13px] text-muted-soft">
+          {children.length} niños
+        </span>
+        <span className="h-px flex-1 bg-divider" />
+      </div>
+
       <div className="grid grid-cols-2 gap-3.5">
         {visibleChildren.map((child) => (
           <ChildCard key={child.id} child={child} />
