@@ -30,6 +30,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         <button
           type="button"
           aria-label="Abrir menú"
+          aria-expanded={isDrawerOpen}
           onClick={() => setIsDrawerOpen(true)}
           className="flex size-10 flex-none items-center justify-center rounded-xl bg-cream text-ink"
         >
@@ -40,30 +41,31 @@ export function AppShell({ profile, children }: AppShellProps) {
         </span>
       </header>
 
-      {isDrawerOpen ? (
-        <button
-          type="button"
-          aria-label="Cerrar menú"
-          onClick={() => setIsDrawerOpen(false)}
-          className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
-        />
-      ) : null}
-
-      <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen w-[248px] transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:z-auto lg:translate-x-0 ${
-          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <button
-          type="button"
-          aria-label="Cerrar menú"
-          onClick={() => setIsDrawerOpen(false)}
-          className="absolute top-4 right-3 z-10 flex size-8 items-center justify-center rounded-lg bg-cream text-muted lg:hidden"
-        >
-          <CloseIcon />
-        </button>
+      <div className="hidden lg:sticky lg:top-0 lg:block lg:h-screen">
         <Sidebar profile={profile} />
       </div>
+
+      {isDrawerOpen ? (
+        <div className="lg:hidden">
+          <button
+            type="button"
+            aria-label="Cerrar menú"
+            onClick={() => setIsDrawerOpen(false)}
+            className="fixed inset-0 z-40 bg-ink/40"
+          />
+          <div className="fixed inset-y-0 left-0 z-50 h-screen w-[248px]">
+            <button
+              type="button"
+              aria-label="Cerrar menú"
+              onClick={() => setIsDrawerOpen(false)}
+              className="absolute top-4 right-3 z-10 flex size-8 items-center justify-center rounded-lg bg-cream text-muted"
+            >
+              <CloseIcon />
+            </button>
+            <Sidebar profile={profile} />
+          </div>
+        </div>
+      ) : null}
 
       <main className="min-w-0 flex-1">{children}</main>
     </div>
