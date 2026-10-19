@@ -128,3 +128,19 @@ export function ImageIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function MenuIcon(props: IconProps) {
+  return (
+    <Icon width={22} height={22} strokeWidth={2.2} {...props}>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </Icon>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Icon width={20} height={20} strokeWidth={2.2} {...props}>
+      <path d="M18 6 6 18M6 6l12 12" />
+    </Icon>
+  );
+}
