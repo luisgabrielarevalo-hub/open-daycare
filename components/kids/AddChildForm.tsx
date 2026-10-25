@@ -29,7 +29,7 @@ function getTodayValue() {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
-export function AddChildForm({ onCancel }: AddChildFormProps) {
+export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [room, setRoom] = useState("");
@@ -70,6 +70,18 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
+
+    const isValid = Object.keys(nextErrors).length === 0;
+    if (!isValid) {
+      return;
+    }
+
+    setFullName("");
+    setBirthDate("");
+    setRoom("");
+    setAllergies("");
+    setMedicalNotes("");
+    onSaved();
   }
 
   return (
