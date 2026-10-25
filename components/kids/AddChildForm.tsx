@@ -10,10 +10,24 @@ type AddChildFormProps = {
   onSaved: () => void;
 };
 
+type FieldErrors = {
+  fullName?: string;
+  birthDate?: string;
+  room?: string;
+};
+
 const fieldClass =
   "w-full rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-[13px] text-[15px] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none";
 const labelClass =
   "mb-2 text-[12px] font-extrabold tracking-[0.7px] text-muted";
+const errorClass = "mt-1.5 text-[12.5px] font-semibold text-danger";
+
+function getTodayValue() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
 
 export function AddChildForm({ onCancel }: AddChildFormProps) {
   const [fullName, setFullName] = useState("");
@@ -21,9 +35,41 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
   const [room, setRoom] = useState("");
   const [allergies, setAllergies] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  function clearError(field: keyof FieldErrors) {
+    setErrors((previous) => {
+      if (!previous[field]) {
+        return previous;
+      }
+      return { ...previous, [field]: undefined };
+    });
+  }
+
+  function validate(): FieldErrors {
+    const nextErrors: FieldErrors = {};
+
+    if (!fullName.trim()) {
+      nextErrors.fullName = "Ingresá el nombre completo";
+    }
+
+    if (!birthDate) {
+      nextErrors.birthDate = "Ingresá la fecha de nacimiento";
+    } else if (birthDate > getTodayValue()) {
+      nextErrors.birthDate = "La fecha no puede ser futura";
+    }
+
+    if (!room) {
+      nextErrors.room = "Seleccioná una sala";
+    }
+
+    return nextErrors;
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const nextErrors = validate();
+    setErrors(nextErrors);
   }
 
   return (
@@ -36,7 +82,10 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
         >
           Cancelar
         </button>
-        <span id="add-child-title" className="font-display text-[18px] font-semibold text-ink">
+        <span
+          id="add-child-title"
+          className="font-display text-[18px] font-semibold text-ink"
+        >
           Agregar niño
         </span>
         <button
@@ -48,19 +97,33 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
       </div>
 
       <div className="px-[26px] py-6">
-        <label htmlFor="child-full-name" className={labelClass}>
-          NOMBRE COMPLETO
-        </label>
-        <input
-          id="child-full-name"
-          type="text"
-          value={fullName}
-          onChange={(event) => setFullName(event.target.value)}
-          placeholder="Ej. Martina López"
-          className={`${fieldClass} mb-[18px]`}
-        />
+        <div className="mb-[18px]">
+          <label htmlFor="child-full-name" className={labelClass}>
+            NOMBRE COMPLETO
+          </label>
+          <input
+            id="child-full-name"
+            type="text"
+            value={fullName}
+            onChange={(event) => {
+              setFullName(event.target.value);
+              clearError("fullName");
+            }}
+            placeholder="Ej. Martina López"
+            aria-invalid={Boolean(errors.fullName)}
+            aria-describedby={
+              errors.fullName ? "child-full-name-error" : undefined
+            }
+            className={fieldClass}
+          />
+          {errors.fullName && (
+            <p id="child-full-name-error" className={errorClass}>
+              {errors.fullName}
+            </p>
+          )}
+        </div>
 
-        <div className="mb-[18px] flex gap-3.5">
+        <div className="mb-[18px] flex items-start gap-3.5">
           <div className="flex-1">
             <label htmlFor="child-birth-date" className={labelClass}>
               FECHA DE NACIMIENTO
@@ -69,9 +132,21 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
               id="child-birth-date"
               type="date"
               value={birthDate}
-              onChange={(event) => setBirthDate(event.target.value)}
+              onChange={(event) => {
+                setBirthDate(event.target.value);
+                clearError("birthDate");
+              }}
+              aria-invalid={Boolean(errors.birthDate)}
+              aria-describedby={
+                errors.birthDate ? "child-birth-date-error" : undefined
+              }
               className={fieldClass}
             />
+            {errors.birthDate && (
+              <p id="child-birth-date-error" className={errorClass}>
+                {errors.birthDate}
+              </p>
+            )}
           </div>
           <div className="flex-1">
             <label htmlFor="child-room" className={labelClass}>
@@ -81,7 +156,12 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
               <select
                 id="child-room"
                 value={room}
-                onChange={(event) => setRoom(event.target.value)}
+                onChange={(event) => {
+                  setRoom(event.target.value);
+                  clearError("room");
+                }}
+                aria-invalid={Boolean(errors.room)}
+                aria-describedby={errors.room ? "child-room-error" : undefined}
                 className={`${fieldClass} appearance-none pr-10 font-bold ${room ? "" : "text-field-placeholder"}`}
               >
                 <option value="" disabled>
@@ -95,31 +175,40 @@ export function AddChildForm({ onCancel }: AddChildFormProps) {
               </select>
               <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-[#B0A290]" />
             </div>
+            {errors.room && (
+              <p id="child-room-error" className={errorClass}>
+                {errors.room}
+              </p>
+            )}
           </div>
         </div>
 
-        <label htmlFor="child-allergies" className={labelClass}>
-          ALERGIAS (ETIQUETAS)
-        </label>
-        <input
-          id="child-allergies"
-          type="text"
-          value={allergies}
-          onChange={(event) => setAllergies(event.target.value)}
-          placeholder="Ej. Maní, Lactosa"
-          className={`${fieldClass} mb-[18px]`}
-        />
+        <div className="mb-[18px]">
+          <label htmlFor="child-allergies" className={labelClass}>
+            ALERGIAS (ETIQUETAS)
+          </label>
+          <input
+            id="child-allergies"
+            type="text"
+            value={allergies}
+            onChange={(event) => setAllergies(event.target.value)}
+            placeholder="Ej. Maní, Lactosa"
+            className={fieldClass}
+          />
+        </div>
 
-        <label htmlFor="child-medical-notes" className={labelClass}>
-          NOTAS MÉDICAS
-        </label>
-        <textarea
-          id="child-medical-notes"
-          value={medicalNotes}
-          onChange={(event) => setMedicalNotes(event.target.value)}
-          placeholder="Indicaciones, medicación, contactos…"
-          className={`${fieldClass} min-h-[90px] resize-y leading-[1.5]`}
-        />
+        <div>
+          <label htmlFor="child-medical-notes" className={labelClass}>
+            NOTAS MÉDICAS
+          </label>
+          <textarea
+            id="child-medical-notes"
+            value={medicalNotes}
+            onChange={(event) => setMedicalNotes(event.target.value)}
+            placeholder="Indicaciones, medicación, contactos…"
+            className={`${fieldClass} min-h-[90px] resize-y leading-[1.5]`}
+          />
+        </div>
       </div>
     </form>
   );
