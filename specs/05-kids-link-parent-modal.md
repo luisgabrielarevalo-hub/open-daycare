@@ -1,6 +1,6 @@
 # SPEC 05 — Niños: modal "Vincular padre"
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02 (perfil `/kids/[slug]` y `LinkedParentsCard`), SPEC 04 (tokens `modal-*` y patrón `<dialog>`)
 > **Fecha:** 2026-10-25
 > **Objetivo:** Implementar `vincular-padre.dc.html` como modal de invitación abierto desde "Vincular otro padre" en el perfil del niño, con nombre y email obligatorios, parentesco preseleccionado y código fijo, sin enviar ni persistir nada.
@@ -63,25 +63,25 @@ El estado (`fullName`, `email`, `relationship` y errores) es local al formulario
 
 ## Criterios de aceptación
 
-- [ ] `/kids/mateo-fernandez` carga sin errores en consola y "Vincular otro padre" abre el modal sin navegar.
-- [ ] El modal muestra "Vincular padre", "a Mateo Fernández", la X, el aviso, los dos campos, los tres parentescos, la caja de código y "Enviar invitación".
-- [ ] El aviso menciona "Solo verá el feed de Mateo" para Mateo y el nombre de pila correcto en otros perfiles.
-- [ ] Los campos arrancan vacíos con los placeholders del mockup; "Mamá" arranca seleccionada.
-- [ ] Cambiar a "Papá" o "Tutor/a" actualiza la selección y solo una pill queda activa.
-- [ ] "Enviar invitación" con nombre y email vacíos muestra ambos errores y no cierra el modal.
-- [ ] Un nombre formado solo por espacios se considera vacío.
-- [ ] Un email sin formato válido (ej. "diego", "diego@", "diego@correo") muestra "Ingresá un email válido".
-- [ ] Al corregir un campo, su error desaparece sin volver a enviar.
-- [ ] Con nombre y email válidos, "Enviar invitación" cierra el modal sin añadir padres ni cambiar "PADRES VINCULADOS".
-- [ ] La X, `Escape` y el clic en el fondo cierran el modal; reabrirlo muestra los campos vacíos y "Mamá" seleccionada.
-- [ ] Un clic dentro de la tarjeta no cierra el modal.
-- [ ] Al abrir, el foco está en "Nombre del padre/madre"; los labels están asociados, las pills exponen `aria-pressed` y el diálogo tiene nombre accesible.
-- [ ] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 480px y título en Fredoka.
-- [ ] El código visible es siempre `7K4P9` y la leyenda "Vence en 7 días".
-- [ ] A 390px de ancho no hay desbordamiento horizontal y el contenido alto hace scroll dentro del modal.
-- [ ] `/`, `/kids` y el resto de perfiles siguen funcionando sin cambios.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] La comparación visual con `vincular-padre.dc.html` coincide en estructura, colores, tipografías y espaciados.
+- [x] `/kids/mateo-fernandez` carga sin errores en consola y "Vincular otro padre" abre el modal sin navegar.
+- [x] El modal muestra "Vincular padre", "a Mateo Fernández", la X, el aviso, los dos campos, los tres parentescos, la caja de código y "Enviar invitación".
+- [x] El aviso menciona "Solo verá el feed de Mateo" para Mateo y el nombre de pila correcto en otros perfiles.
+- [x] Los campos arrancan vacíos con los placeholders del mockup; "Mamá" arranca seleccionada.
+- [x] Cambiar a "Papá" o "Tutor/a" actualiza la selección y solo una pill queda activa.
+- [x] "Enviar invitación" con nombre y email vacíos muestra ambos errores y no cierra el modal.
+- [x] Un nombre formado solo por espacios se considera vacío.
+- [x] Un email sin formato válido (ej. "diego", "diego@", "diego@correo") muestra "Ingresá un email válido".
+- [x] Al corregir un campo, su error desaparece sin volver a enviar.
+- [x] Con nombre y email válidos, "Enviar invitación" cierra el modal sin añadir padres ni cambiar "PADRES VINCULADOS".
+- [x] La X, `Escape` y el clic en el fondo cierran el modal; reabrirlo muestra los campos vacíos y "Mamá" seleccionada.
+- [x] Un clic dentro de la tarjeta no cierra el modal.
+- [x] Al abrir, el foco está en "Nombre del padre/madre"; los labels están asociados, las pills exponen `aria-pressed` y el diálogo tiene nombre accesible.
+- [x] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 480px y título en Fredoka.
+- [x] El código visible es siempre `7K4P9` y la leyenda "Vence en 7 días".
+- [x] A 390px de ancho no hay desbordamiento horizontal y el contenido alto hace scroll dentro del modal.
+- [x] `/`, `/kids` y el resto de perfiles siguen funcionando sin cambios.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] La comparación visual con `vincular-padre.dc.html` coincide en estructura, colores, tipografías y espaciados.
 
 ## Decisiones tomadas y descartadas
 
