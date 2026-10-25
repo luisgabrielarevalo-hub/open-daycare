@@ -12,6 +12,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type LinkParentFormProps = {
   childFullName: string;
   onClose: () => void;
+  onSent: () => void;
 };
 
 type FieldErrors = {
@@ -28,6 +29,7 @@ const errorClass = "mt-1.5 text-[12.5px] font-semibold text-danger";
 export function LinkParentForm({
   childFullName,
   onClose,
+  onSent,
 }: LinkParentFormProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,6 +72,11 @@ export function LinkParentForm({
     if (!isValid) {
       return;
     }
+
+    setFullName("");
+    setEmail("");
+    setRelationship("Mamá");
+    onSent();
   }
 
   return (
