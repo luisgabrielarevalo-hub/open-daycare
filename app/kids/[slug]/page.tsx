@@ -98,7 +98,10 @@ export default async function ChildProfilePage({
               <SunIcon />
               Resumen del día
             </a>
-            <LinkedParentsCard parents={child.parents} />
+            <LinkedParentsCard
+              parents={child.parents}
+              childFullName={child.fullName}
+            />
           </div>
         </div>
       </div>

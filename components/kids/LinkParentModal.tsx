@@ -51,7 +51,7 @@ export function LinkParentModal({ childFullName }: LinkParentModalProps) {
         aria-labelledby="link-parent-title"
         onClick={handleBackdropClick}
         onClose={() => setFormKey((key) => key + 1)}
-        className="m-auto max-h-[calc(100dvh-80px)] w-[calc(100%-32px)] max-w-[480px] overflow-y-auto rounded-[24px] border border-border bg-modal-bg p-0 text-ink shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)] backdrop:bg-scrim"
+        className="m-auto max-h-[calc(100dvh-24px)] w-[calc(100%-32px)] max-w-[480px] overflow-y-auto rounded-[24px] border border-border bg-modal-bg p-0 text-ink shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)] backdrop:bg-scrim"
       >
         <LinkParentForm
           key={formKey}
