@@ -54,23 +54,23 @@ Todo el estado (`fullName`, `birthDate`, `room`, `allergies`, `medicalNotes` y e
 
 ## Criterios de aceptación
 
-- [ ] `/kids` carga sin errores en consola y el botón "Agregar niño" abre la modal sin navegar.
-- [ ] La modal muestra las acciones "Cancelar", "Agregar niño" y "Guardar", y los cinco campos del mockup con sus placeholders.
-- [ ] Sala ofrece "Seleccioná una sala", "Soles", "Lunas" y "Estrellas", y arranca sin selección.
-- [ ] "Guardar" con los tres obligatorios vacíos muestra los tres errores y no cierra la modal.
-- [ ] Un nombre formado solo por espacios se considera vacío.
-- [ ] Una fecha futura muestra "La fecha no puede ser futura"; hoy y fechas pasadas se aceptan.
-- [ ] Al corregir un campo, su error desaparece sin necesidad de volver a enviar.
-- [ ] Con datos válidos, "Guardar" cierra la modal y limpia todos los campos y errores.
-- [ ] Tras guardar, el listado sigue mostrando 8 niños y ningún niño nuevo aparece.
-- [ ] "Cancelar", `Escape` y clic en el fondo cierran la modal; reabrirla muestra el formulario vacío.
-- [ ] Un clic dentro de la tarjeta no cierra la modal.
-- [ ] Al abrir, el foco está en "Nombre completo"; los labels están asociados y la modal tiene nombre accesible.
-- [ ] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 520px y título en Fredoka.
-- [ ] A 390px de ancho no hay desbordamiento horizontal y el contenido alto hace scroll dentro de la modal.
-- [ ] `/`, `/kids` y `/kids/mateo-fernandez` siguen funcionando sin cambios.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] La comparación visual con `agregar-nino.dc.html` coincide en estructura, colores, tipografías y espaciados.
+- [x] `/kids` carga sin errores en consola y el botón "Agregar niño" abre la modal sin navegar.
+- [x] La modal muestra las acciones "Cancelar", "Agregar niño" y "Guardar", y los cinco campos del mockup con sus placeholders.
+- [x] Sala ofrece "Seleccioná una sala", "Soles", "Lunas" y "Estrellas", y arranca sin selección.
+- [x] "Guardar" con los tres obligatorios vacíos muestra los tres errores y no cierra la modal.
+- [x] Un nombre formado solo por espacios se considera vacío.
+- [x] Una fecha futura muestra "La fecha no puede ser futura"; hoy y fechas pasadas se aceptan.
+- [x] Al corregir un campo, su error desaparece sin necesidad de volver a enviar.
+- [x] Con datos válidos, "Guardar" cierra la modal y limpia todos los campos y errores.
+- [x] Tras guardar, el listado sigue mostrando 8 niños y ningún niño nuevo aparece.
+- [x] "Cancelar", `Escape` y clic en el fondo cierran la modal; reabrirla muestra el formulario vacío.
+- [x] Un clic dentro de la tarjeta no cierra la modal.
+- [x] Al abrir, el foco está en "Nombre completo"; los labels están asociados y la modal tiene nombre accesible.
+- [x] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 520px y título en Fredoka.
+- [x] A 390px de ancho no hay desbordamiento horizontal y el contenido alto hace scroll dentro de la modal.
+- [x] `/`, `/kids` y `/kids/mateo-fernandez` siguen funcionando sin cambios.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] La comparación visual con `agregar-nino.dc.html` coincide en estructura, colores, tipografías y espaciados.
 
 ## Decisiones tomadas y descartadas
 
