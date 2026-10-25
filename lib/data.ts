@@ -7,7 +7,7 @@ export type PostKind =
   | "photo"
   | "announcement";
 
-export type PostAudienceKind = "child" | "room";
+export type PostAudienceKind = "child" | "children" | "room";
 
 export type Post = {
   id: string;

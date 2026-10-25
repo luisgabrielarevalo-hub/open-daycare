@@ -76,10 +76,12 @@ const POST_TYPE_ORDER = [
   "announcement",
 ] as const;
 
-export type RecipientId = (typeof RECIPIENT_IDS)[number] | "room";
+export type ChildRecipientId = (typeof RECIPIENT_IDS)[number];
+
+export type RecipientId = ChildRecipientId | "room";
 
 export type PostDraft = {
-  recipientId: RecipientId;
+  recipientIds: RecipientId[];
   kind: PostKind;
   body: string;
   photos: string[];
@@ -99,9 +101,9 @@ function getFirstName(fullName: string) {
 }
 
 export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
-  const [recipientId, setRecipientId] = useState<RecipientId>(
+  const [recipientIds, setRecipientIds] = useState<RecipientId[]>([
     RECIPIENT_IDS[0],
-  );
+  ]);
   const [kind, setKind] = useState<PostKind>("activity");
   const [body, setBody] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -151,6 +153,27 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
     setHasTooManyPhotos(false);
   }
 
+  function toggleChild(id: ChildRecipientId) {
+    setRecipientIds((current) => {
+      if (current.includes("room")) {
+        return [id];
+      }
+
+      if (current.includes(id)) {
+        if (current.length === 1) {
+          return current;
+        }
+        return current.filter((recipient) => recipient !== id);
+      }
+
+      return [...current, id];
+    });
+  }
+
+  function selectRoom() {
+    setRecipientIds(["room"]);
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -161,7 +184,7 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
 
     transferredRef.current = true;
     onPublish({
-      recipientId,
+      recipientIds,
       kind,
       body: body.trim(),
       photos,
@@ -203,14 +226,14 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
           </div>
           <div className="flex flex-wrap gap-[9px]">
             {recipients.map((child) => {
-              const isActive = recipientId === child.id;
+              const isActive = recipientIds.includes(child.id);
 
               return (
                 <button
                   key={child.id}
                   type="button"
                   aria-pressed={isActive}
-                  onClick={() => setRecipientId(child.id)}
+                  onClick={() => toggleChild(child.id)}
                   className={`flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] py-1.5 pr-3.5 pl-1.5 text-[14px] font-bold ${
                     isActive
                       ? "border-ink bg-ink text-white"
@@ -232,10 +255,10 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
             })}
             <button
               type="button"
-              aria-pressed={recipientId === "room"}
-              onClick={() => setRecipientId("room")}
+              aria-pressed={recipientIds.includes("room")}
+              onClick={selectRoom}
               className={`cursor-pointer rounded-full border-[1.5px] px-4 py-1.5 text-[14px] font-bold ${
-                recipientId === "room"
+                recipientIds.includes("room")
                   ? "border-ink bg-ink text-white"
                   : "border-border bg-paper text-nav-inactive"
               }`}

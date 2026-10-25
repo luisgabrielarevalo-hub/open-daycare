@@ -3,7 +3,7 @@
 > **Estado:** Aprobado
 > **Depende de:** SPEC 01 (feed, `PostCard`, `ComposerPrompt`, `Sidebar`), SPEC 04 (patrón `<dialog>`, tokens `modal-*`, `field-*` y `scrim`)
 > **Fecha:** 2026-10-25
-> **Objetivo:** Implementar `crear-publicacion.dc.html` como modal de creación abierto desde el sidebar y el composer que, con destinatario, tipo, descripción y hasta cuatro fotos, inserta el post al inicio del feed durante la sesión sin backend.
+> **Objetivo:** Implementar `crear-publicacion.dc.html` como modal de creación abierto desde el sidebar y el composer que, con destinatarios, tipo, descripción y hasta cuatro fotos, inserta el post al inicio del feed durante la sesión sin backend.
 
 ## Alcance
 
@@ -14,7 +14,9 @@
 - `components/feed/FeedProvider.tsx` (`"use client"`) en el layout raíz: mantiene los posts y el estado del modal, y renderiza una única instancia del diálogo para toda la app.
 - `components/feed/FeedPosts.tsx` (`"use client"`) que lee los posts del provider; `app/page.tsx` sigue siendo server y conserva el saludo y el divisor "PUBLICADO HOY".
 - Estructura fiel al mockup: tarjeta `modal-bg`, borde `border`, radio 24px, ancho máximo 580px, sombra y scrim. Cabecera con "Cancelar", "Nueva publicación" y "Publicar".
-- Destinatarios con selección única entre **Mateo, Sofía, Benjamín y Toda la sala**; Mateo seleccionado al abrir.
+- Destinatarios con selección múltiple entre **Mateo, Sofía y Benjamín**, más **Toda la sala**; Mateo seleccionado al abrir.
+- "Toda la sala" es excluyente: al elegirla se deseleccionan los niños y, al elegir un niño, se deselecciona "Toda la sala". No se puede deseleccionar el último niño seleccionado.
+- Con dos o más niños seleccionados, el post queda a nombre de **Niños** y se muestra como "Para: sus familias".
 - Tipos con selección única entre **Comida, Siesta, Actividad, Logro, Ánimo, Foto y Anuncio**; Actividad seleccionada al abrir.
 - El tipo activo se ve con su color intenso y texto blanco; los inactivos con su versión clara y texto de color.
 - Descripción obligatoria, vacía al abrir, con el placeholder "Contá cómo le fue hoy…" y `maxLength` de 1000.
@@ -36,9 +38,9 @@
 - Persistencia de posts nuevos después de recargar.
 - Editar, borrar, fijar, programar o guardar borradores de publicaciones.
 - Reacciones, comentarios o detalle del post desde el feed.
-- Múltiples destinatarios o múltiples tipos por publicación.
+- Múltiples tipos por publicación.
 - Todos los niños de `lib/data.ts` como destinatarios; solo los tres del mockup y "Toda la sala".
-- Validación de tipo o destinatario: ambos arrancan seleccionados y siempre tienen valor.
+- Validación de tipo o destinatario: los niños arrancan con Mateo seleccionado y el formulario impide quedarse sin destinatario; el tipo siempre tiene valor.
 - Confirmación al cerrar con contenido escrito.
 - Drag and drop, recorte, compresión, lightbox o texto alternativo individual de fotos.
 - Animaciones de apertura/cierre.
@@ -58,7 +60,7 @@ export type PostKind =
   | "photo"
   | "announcement";
 
-export type PostAudienceKind = "child" | "room";
+export type PostAudienceKind = "child" | "children" | "room";
 
 export type Post = {
   id: string;
@@ -78,7 +80,7 @@ export type Post = {
 };
 ```
 
-- `audienceKind` decide si el avatar es el del niño o el megáfono de "Anuncio general". No se infiere de `kind`.
+- `audienceKind` decide si el avatar es el del niño, el grupo "Niños" o el megáfono de "Anuncio general". No se infiere de `kind`.
 - `photos` contiene URLs `blob:` creadas con `URL.createObjectURL`; viven solo en memoria durante la sesión.
 - `CreatePostForm` define:
 
@@ -101,8 +103,10 @@ const POST_TYPES = [
 ```
 
 - Estado inicial del formulario: Mateo, Actividad, descripción vacía y `photos: []`.
+- Selección de niños en un array de ids; "Toda la sala" se representa aparte y es excluyente. Si se deselecciona un niño y era el único, la selección no cambia.
 - Post creado para un niño: `authorName` con el nombre de pila, `authorInitial` y colores del niño, `audience` `"familia de {nombre}"`, `audienceKind: "child"`, `time` `"HH:mm · publicado por vos"`, `reactions: 0`, `comments: 0`.
 - Post creado para "Toda la sala": `authorName: "Anuncio general"`, `authorInitial: ""`, `avatarBg: "#CCD8F4"`, `avatarColor: "#4E72C8"`, `audience: "toda la sala"`, `audienceKind: "room"`.
+- Post creado para dos o más niños: `authorName: "Niños"`, `authorInitial: "N"`, `avatarBg: "#CCD8F4"`, `avatarColor: "#4E72C8"`, `audience: "sus familias"`, `audienceKind: "children"`.
 - `id` con `crypto.randomUUID()`.
 - El texto se guarda con `body.trim()`.
 - Las fotos se transfieren del formulario al post; no se revocan al publicar.
@@ -114,9 +118,9 @@ const POST_TYPES = [
 3. `components/feed/PostCard.tsx`: mapear los siete tipos a etiquetas y colores, usar `audienceKind` para el megáfono y renderizar la galería de `photos` (una foto a ancho completo; dos o más en cuadrícula de dos columnas). Verificar el feed actual.
 4. `components/feed/FeedProvider.tsx` y `app/layout.tsx`: provider con `posts`, `addPost`, `isComposerOpen`, `openComposer` y `closeComposer`; envolver `children` con `initialPosts={posts}`. Verificar que todas las rutas siguen funcionando.
 5. `components/feed/FeedPosts.tsx` y `app/page.tsx`: sustituir el `posts.map` por `FeedPosts`. El feed debe verse idéntico.
-6. `components/feed/CreatePostForm.tsx`: cabecera, destinatarios, tipos, descripción y fotos; defaults, selección única, validación, previews, límite de 4 y aviso de exceso. Todavía sin publicar.
+6. `components/feed/CreatePostForm.tsx`: cabecera, destinatarios, tipos, descripción y fotos; defaults, selección múltiple de niños con "Toda la sala" excluyente, bloqueo del último niño, validación, previews, límite de 4 y aviso de exceso. Todavía sin publicar.
 7. `components/feed/CreatePostModal.tsx`: `<dialog>` con `showModal()`, foco en la descripción, cierre por Cancelar, `Escape` y backdrop, y reset por `key` en `onClose`. Conectarlo al provider.
-8. Cablear "Publicar": construir el post, llamar a `addPost`, cerrar y resetear. Verificar que aparece primero en el feed.
+8. Cablear "Publicar": construir el post de un niño, de "Niños" o de "Toda la sala", llamar a `addPost`, cerrar y resetear. Verificar que aparece primero en el feed.
 9. `Sidebar`, `AppShell` y `ComposerPrompt`: convertir los disparadores en botones; `AppShell` cierra el drawer y abre el modal. Verificar `/`, `/kids` y `/kids/mateo-fernandez`.
 10. Verificar `npx tsc --noEmit` y `npm run lint`; comparar con Playwright a 1440×900 y 390×844 contra `references/pantallas/crear-publicacion.dc.html` y comprobar el post nuevo en el feed.
 
@@ -127,7 +131,10 @@ const POST_TYPES = [
 - [ ] En móvil, abrir desde el drawer cierra el drawer y deja solo el modal con su scrim.
 - [ ] El modal muestra "Cancelar", "Nueva publicación" y "Publicar", más las secciones PARA, TIPO, DESCRIPCIÓN y FOTOS.
 - [ ] Al abrir, Mateo está seleccionado, Actividad está activa, la descripción está vacía y no hay fotos.
-- [ ] Los cuatro destinatarios son Mateo, Sofía, Benjamín y Toda la sala; solo uno queda seleccionado y expone `aria-pressed`.
+- [ ] Los cuatro destinatarios son Mateo, Sofía, Benjamín y Toda la sala; los botones exponen `aria-pressed` y permiten seleccionar varios niños.
+- [ ] Con dos o más niños seleccionados, el post muestra "Niños", su avatar "N" y "Para: sus familias".
+- [ ] "Toda la sala" deselecciona los niños; elegir un niño deselecciona "Toda la sala".
+- [ ] No se puede deseleccionar el último niño seleccionado.
 - [ ] Los siete tipos están presentes; solo uno queda activo, con relleno intenso, y los demás con su versión clara.
 - [ ] "Publicar" con la descripción vacía o solo con espacios muestra "Escribí una descripción" y no cierra el modal.
 - [ ] Escribir en la descripción elimina su error sin volver a enviar.
@@ -160,7 +167,8 @@ const POST_TYPES = [
 - **Sí:** ampliar `PostKind` y añadir `audienceKind`. El tipo elegido y la audiencia son independientes; sin `audienceKind`, un anuncio a un niño mostraría el megáfono por error.
 - **Sí:** destinatarios por id (`mateo-fernandez`, `sofia-mendez`, `benjamin-ruiz`). Evita depender del orden de `children`.
 - **Sí:** Mateo y Actividad preseleccionados. Coincide con el mockup y elimina dos validaciones que no aportan información.
-- **Sí:** selección única de destinatario y tipo. Encaja con el feed actual, que muestra una audiencia y un chip por post.
+- **Sí:** selección múltiple de niños y selección única de tipo. "Toda la sala" es excluyente para no mezclar una audiencia individual con la sala.
+- **Sí:** con dos o más niños, el post se muestra como "Niños" / "sus familias", sin listar nombres. Evita una línea de audiencia larga y encaja con el feed actual.
 - **Sí:** tipo activo con relleno intenso y texto blanco; inactivos con su tono claro. Distingue la selección sin añadir chrome que el mockup no tiene.
 - **Sí:** descripción obligatoria con `maxLength` 1000. Genera un único error real y evita posts vacíos.
 - **Sí:** fotos opcionales, máximo 4, con previews locales. Replica la sección del mockup sin inventar subida de archivos.
@@ -172,8 +180,8 @@ const POST_TYPES = [
 - **Sí:** URLs `blob:` con transferencia al publicar. Evita convertir imágenes a base64 y mantiene el estado serializable fuera del formulario.
 - **Sí:** aviso de exceso de fotos que se limpia al quitar una. Evita un error pegajoso sin volver a abrir el selector.
 - **No:** backend, `localStorage` o subida real. Descartado por el usuario; el post vive solo en la sesión.
-- **No:** múltiples destinatarios o tipos. Requeriría cambiar el modelo del feed.
-- **No:** validar tipo o destinatario. Siempre tienen valor y no habría forma de dejarlos vacíos.
+- **No:** múltiples tipos por post. Requeriría cambiar el modelo del feed.
+- **No:** validar tipo o destinatario. El formulario impide quedarse sin niños o sin sala y el tipo siempre tiene valor.
 - **No:** confirmación al descartar, animaciones, drag and drop, recorte o lightbox.
 - **No:** editar o borrar posts, reacciones o comentarios.
 - **No:** cambios en `children`, `staffProfile` o en el contenido de los tres posts existentes más allá de `audienceKind`.
@@ -191,12 +199,13 @@ const POST_TYPES = [
 | Las fotos grandes consumen memoria | Máximo 4, sin subida ni persistencia; el post se pierde al recargar |
 | El post desaparece al recargar | Aceptado: la sesión es el límite de persistencia elegido |
 | Cambios en `children` rompen los destinatarios | Filtrar por ids conocidos y omitir los que no existan |
+| Quedarse sin destinatarios al deseleccionar | Bloquear la deselección del último niño y hacer "Toda la sala" excluyente |
 | El `<dialog>` y el scrim se ven distintos en Safari/Chrome | Fijar tokens y verificar en Chromium con Playwright; revisar el CSS del backdrop |
 
 ## Qué **no** entra en esta spec
 
 - Backend, subida real o persistencia de publicaciones.
-- Múltiples destinatarios o tipos por post.
+- Múltiples tipos por post.
 - Edición, borrado, programación o borradores.
 - Reacciones, comentarios y detalle del post desde el feed.
 - Drag and drop, recorte, compresión o lightbox de fotos.

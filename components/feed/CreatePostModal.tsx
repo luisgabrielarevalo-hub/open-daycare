@@ -50,48 +50,62 @@ export function CreatePostModal() {
   }
 
   function handlePublish(draft: PostDraft) {
-    const time = getCurrentTimeLabel();
+    const base = {
+      id: crypto.randomUUID(),
+      kind: draft.kind,
+      time: getCurrentTimeLabel(),
+      body: draft.body,
+      reactions: 0,
+      comments: 0,
+      photos: draft.photos,
+    };
+
     let post: Post;
 
-    if (draft.recipientId === "room") {
+    if (draft.recipientIds.includes("room")) {
       post = {
-        id: crypto.randomUUID(),
-        kind: draft.kind,
+        ...base,
         audienceKind: "room",
         authorName: "Anuncio general",
         authorInitial: "",
         avatarBg: "#CCD8F4",
         avatarColor: "#4E72C8",
-        time,
         audience: "toda la sala",
-        body: draft.body,
-        reactions: 0,
-        comments: 0,
-        photos: draft.photos,
       };
     } else {
-      const child = children.find((item) => item.id === draft.recipientId);
-      if (!child) {
+      const selectedChildren = draft.recipientIds.flatMap((id) => {
+        const child = children.find((item) => item.id === id);
+        return child ? [child] : [];
+      });
+
+      if (selectedChildren.length === 0) {
         return;
       }
 
-      const firstName = child.fullName.split(" ")[0];
+      if (selectedChildren.length === 1) {
+        const child = selectedChildren[0];
+        const firstName = child.fullName.split(" ")[0];
 
-      post = {
-        id: crypto.randomUUID(),
-        kind: draft.kind,
-        audienceKind: "child",
-        authorName: firstName,
-        authorInitial: firstName.charAt(0),
-        avatarBg: child.avatarBg,
-        avatarColor: child.avatarColor,
-        time,
-        audience: `familia de ${firstName}`,
-        body: draft.body,
-        reactions: 0,
-        comments: 0,
-        photos: draft.photos,
-      };
+        post = {
+          ...base,
+          audienceKind: "child",
+          authorName: firstName,
+          authorInitial: firstName.charAt(0),
+          avatarBg: child.avatarBg,
+          avatarColor: child.avatarColor,
+          audience: `familia de ${firstName}`,
+        };
+      } else {
+        post = {
+          ...base,
+          audienceKind: "children",
+          authorName: "Niños",
+          authorInitial: "N",
+          avatarBg: "#CCD8F4",
+          avatarColor: "#4E72C8",
+          audience: "sus familias",
+        };
+      }
     }
 
     addPost(post);
