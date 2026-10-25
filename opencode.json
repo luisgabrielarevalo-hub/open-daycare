@@ -6,5 +6,11 @@
       "command": ["npx", "@playwright/mcp@latest"],
       "enabled": true
     }
+  },
+  "permission": {
+    "external_directory": {
+      "/tmp/**": "allow"
+    },
+    "bash": "allow"
   }
 }
