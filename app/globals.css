@@ -83,6 +83,14 @@
   --color-consent-bg: #fbf1d6;
   --color-consent-text: #8a7234;
   --color-consent-check: #5fb97e;
+
+  /* Modal / form */
+  --color-modal-bg: #fbf4ec;
+  --color-field-border: #eadfd0;
+  --color-field-placeholder: #b6a99b;
+  --color-field-focus: #f2a78e;
+  --color-danger: #c5413a;
+  --color-scrim: rgba(63, 54, 46, 0.35);
 }
 
 @theme inline {

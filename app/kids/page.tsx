@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/AppShell";
+import { AddChildModal } from "@/components/kids/AddChildModal";
 import { KidsDirectory } from "@/components/kids/KidsDirectory";
-import { PlusIcon } from "@/components/ui/icons";
 import { staffProfile } from "@/lib/data";
 
 export default function KidsPage() {
@@ -16,13 +16,7 @@ export default function KidsPage() {
               Niños
             </h1>
           </div>
-          <a
-            href="#"
-            className="flex items-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral px-[18px] py-[11px] text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.7)]"
-          >
-            <PlusIcon />
-            Agregar niño
-          </a>
+          <AddChildModal />
         </div>
 
         <KidsDirectory />

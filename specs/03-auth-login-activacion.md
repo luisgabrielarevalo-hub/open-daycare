@@ -1,6 +1,6 @@
 # SPEC 03 — Auth: login y activación de cuenta
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (tokens en `app/globals.css`, fuentes e iconos)
 > **Fecha:** 2026-10-25
 > **Objetivo:** Implementar `login.dc.html` en `/auth/login` y `activar-cuenta.dc.html` en `/auth/activate` como pantallas visuales, replicando su diseño con Tailwind v4, sin autenticación ni backend.
