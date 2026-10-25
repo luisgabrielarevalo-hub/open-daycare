@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { CreatePostModal } from "@/components/feed/CreatePostModal";
 import type { Post } from "@/lib/data";
 
 type FeedContextValue = {
@@ -41,7 +42,12 @@ export function FeedProvider({ initialPosts, children }: FeedProviderProps) {
     [posts, addPost, isComposerOpen, openComposer, closeComposer],
   );
 
-  return <FeedContext.Provider value={value}>{children}</FeedContext.Provider>;
+  return (
+    <FeedContext.Provider value={value}>
+      {children}
+      <CreatePostModal />
+    </FeedContext.Provider>
+  );
 }
 
 export function useFeed() {
