@@ -35,6 +35,14 @@
   --color-activity-fg: #2e89a6;
   --color-announcement-bg: #ccd8f4;
   --color-announcement-fg: #4e72c8;
+  --color-meal-bg: #f7e7a6;
+  --color-meal-fg: #9a7b1e;
+  --color-nap-bg: #e7dcf6;
+  --color-nap-fg: #7b5fc0;
+  --color-mood-bg: #f9d2de;
+  --color-mood-fg: #c56486;
+  --color-kind-photo-bg: #fbd8cc;
+  --color-kind-photo-fg: #d9684a;
 
   /* Avatars */
   --color-avatar-peach-light: #f8c3a8;
