@@ -1,6 +1,6 @@
 # SPEC 06 — Feed: modal "Nueva publicación"
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (feed, `PostCard`, `ComposerPrompt`, `Sidebar`), SPEC 04 (patrón `<dialog>`, tokens `modal-*`, `field-*` y `scrim`)
 > **Fecha:** 2026-10-25
 > **Objetivo:** Implementar `crear-publicacion.dc.html` como modal de creación abierto desde el sidebar y el composer que, con destinatarios, tipo, descripción y hasta cuatro fotos, inserta el post al inicio del feed durante la sesión sin backend.
@@ -126,39 +126,39 @@ const POST_TYPES = [
 
 ## Criterios de aceptación
 
-- [ ] `/` carga sin errores en consola.
-- [ ] "Nueva publicación" del sidebar y "Compartí un momento…" abren el mismo modal sin navegar.
-- [ ] En móvil, abrir desde el drawer cierra el drawer y deja solo el modal con su scrim.
-- [ ] El modal muestra "Cancelar", "Nueva publicación" y "Publicar", más las secciones PARA, TIPO, DESCRIPCIÓN y FOTOS.
-- [ ] Al abrir, Mateo está seleccionado, Actividad está activa, la descripción está vacía y no hay fotos.
-- [ ] Los cuatro destinatarios son Mateo, Sofía, Benjamín y Toda la sala; los botones exponen `aria-pressed` y permiten seleccionar varios niños.
-- [ ] Con dos o más niños seleccionados, el post muestra "Niños", su avatar "N" y "Para: sus familias".
-- [ ] "Toda la sala" deselecciona los niños; elegir un niño deselecciona "Toda la sala".
-- [ ] No se puede deseleccionar el último niño seleccionado.
-- [ ] Los siete tipos están presentes; solo uno queda activo, con relleno intenso, y los demás con su versión clara.
-- [ ] "Publicar" con la descripción vacía o solo con espacios muestra "Escribí una descripción" y no cierra el modal.
-- [ ] Escribir en la descripción elimina su error sin volver a enviar.
-- [ ] La descripción acepta hasta 1000 caracteres y no permite superarlos.
-- [ ] Se pueden adjuntar hasta 4 imágenes, ver sus miniaturas y quitar cualquiera.
-- [ ] Con 4 fotos, la opción "Agregar" ya no permite añadir más.
-- [ ] Elegir más de 4 fotos agrega hasta 4 y muestra "Podés adjuntar hasta 4 fotos"; el aviso desaparece al quitar una.
-- [ ] Los archivos que no son imagen se ignoran.
-- [ ] Las fotos son opcionales, incluso con el tipo Foto.
-- [ ] Con datos válidos, "Publicar" cierra el modal y el post aparece primero bajo "PUBLICADO HOY".
-- [ ] Un post para Mateo muestra su nombre de pila, su avatar, "familia de Mateo", la hora actual con "publicado por vos", 0 reacciones y 0 comentarios.
-- [ ] Un post para Toda la sala muestra "Anuncio general", el megáfono y "toda la sala".
-- [ ] Un post de tipo Anuncio dirigido a un niño conserva el avatar del niño, no el megáfono.
-- [ ] El chip del feed corresponde al tipo elegido, con su etiqueta y color.
-- [ ] Una foto se ve a ancho completo; dos o más se ven en cuadrícula; los posts viejos conservan su placeholder punteado.
-- [ ] Al reabrir después de cancelar, el formulario vuelve a Mateo, Actividad, descripción vacía y sin fotos.
-- [ ] Un post creado en `/kids` sigue estando al volver a `/`; recargar lo elimina.
-- [ ] "Cancelar", `Escape` y el clic en el fondo cierran; un clic dentro de la tarjeta no cierra.
-- [ ] Al abrir, el foco está en la descripción; el diálogo tiene nombre accesible, los labels están asociados y los botones de quitar foto tienen nombre accesible.
-- [ ] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 580px y título en Fredoka.
-- [ ] A 390px no hay desbordamiento horizontal y el contenido alto hace scroll dentro del modal.
-- [ ] `/kids` y `/kids/mateo-fernandez` siguen funcionando sin cambios.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] La comparación visual con `crear-publicacion.dc.html` coincide en estructura, colores, tipografías y espaciados.
+- [x] `/` carga sin errores en consola.
+- [x] "Nueva publicación" del sidebar y "Compartí un momento…" abren el mismo modal sin navegar.
+- [x] En móvil, abrir desde el drawer cierra el drawer y deja solo el modal con su scrim.
+- [x] El modal muestra "Cancelar", "Nueva publicación" y "Publicar", más las secciones PARA, TIPO, DESCRIPCIÓN y FOTOS.
+- [x] Al abrir, Mateo está seleccionado, Actividad está activa, la descripción está vacía y no hay fotos.
+- [x] Los cuatro destinatarios son Mateo, Sofía, Benjamín y Toda la sala; los botones exponen `aria-pressed` y permiten seleccionar varios niños.
+- [x] Con dos o más niños seleccionados, el post muestra "Niños", su avatar "N" y "Para: sus familias".
+- [x] "Toda la sala" deselecciona los niños; elegir un niño deselecciona "Toda la sala".
+- [x] No se puede deseleccionar el último niño seleccionado.
+- [x] Los siete tipos están presentes; solo uno queda activo, con relleno intenso, y los demás con su versión clara.
+- [x] "Publicar" con la descripción vacía o solo con espacios muestra "Escribí una descripción" y no cierra el modal.
+- [x] Escribir en la descripción elimina su error sin volver a enviar.
+- [x] La descripción acepta hasta 1000 caracteres y no permite superarlos.
+- [x] Se pueden adjuntar hasta 4 imágenes, ver sus miniaturas y quitar cualquiera.
+- [x] Con 4 fotos, la opción "Agregar" ya no permite añadir más.
+- [x] Elegir más de 4 fotos agrega hasta 4 y muestra "Podés adjuntar hasta 4 fotos"; el aviso desaparece al quitar una.
+- [x] Los archivos que no son imagen se ignoran.
+- [x] Las fotos son opcionales, incluso con el tipo Foto.
+- [x] Con datos válidos, "Publicar" cierra el modal y el post aparece primero bajo "PUBLICADO HOY".
+- [x] Un post para Mateo muestra su nombre de pila, su avatar, "familia de Mateo", la hora actual con "publicado por vos", 0 reacciones y 0 comentarios.
+- [x] Un post para Toda la sala muestra "Anuncio general", el megáfono y "toda la sala".
+- [x] Un post de tipo Anuncio dirigido a un niño conserva el avatar del niño, no el megáfono.
+- [x] El chip del feed corresponde al tipo elegido, con su etiqueta y color.
+- [x] Una foto se ve a ancho completo; dos o más se ven en cuadrícula; los posts viejos conservan su placeholder punteado.
+- [x] Al reabrir después de cancelar, el formulario vuelve a Mateo, Actividad, descripción vacía y sin fotos.
+- [x] Un post creado en `/kids` sigue estando al volver a `/`; recargar lo elimina.
+- [x] "Cancelar", `Escape` y el clic en el fondo cierran; un clic dentro de la tarjeta no cierra.
+- [x] Al abrir, el foco está en la descripción; el diálogo tiene nombre accesible, los labels están asociados y los botones de quitar foto tienen nombre accesible.
+- [x] La tarjeta usa fondo `#FBF4EC`, borde `#ECE0D0`, radio 24px, ancho máximo 580px y título en Fredoka.
+- [x] A 390px no hay desbordamiento horizontal y el contenido alto hace scroll dentro del modal.
+- [x] `/kids` y `/kids/mateo-fernandez` siguen funcionando sin cambios.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] La comparación visual con `crear-publicacion.dc.html` coincide en estructura, colores, tipografías y espaciados.
 
 ## Decisiones tomadas y descartadas
 
