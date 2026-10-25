@@ -1,3 +1,6 @@
+"use client";
+
+import { useFeed } from "@/components/feed/FeedProvider";
 import { CameraIcon } from "@/components/ui/icons";
 
 type ComposerPromptProps = {
@@ -5,10 +8,13 @@ type ComposerPromptProps = {
 };
 
 export function ComposerPrompt({ initial }: ComposerPromptProps) {
+  const { openComposer } = useFeed();
+
   return (
-    <a
-      href="#"
-      className="mb-6 flex items-center gap-3.5 rounded-[18px] border border-border bg-paper px-[18px] py-3.5 shadow-[0_4px_14px_-10px_rgba(120,90,60,0.4)]"
+    <button
+      type="button"
+      onClick={openComposer}
+      className="mb-6 flex w-full cursor-pointer items-center gap-3.5 rounded-[18px] border border-border bg-paper px-[18px] py-3.5 text-left shadow-[0_4px_14px_-10px_rgba(120,90,60,0.4)]"
     >
       <div className="flex size-10 flex-none items-center justify-center rounded-full bg-avatar-peach font-display text-base font-semibold text-white">
         {initial}
@@ -19,6 +25,6 @@ export function ComposerPrompt({ initial }: ComposerPromptProps) {
       <span className="flex size-[38px] items-center justify-center rounded-xl bg-coral-soft text-coral-deep-soft">
         <CameraIcon />
       </span>
-    </a>
+    </button>
   );
 }
