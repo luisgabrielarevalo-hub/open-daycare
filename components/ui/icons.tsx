@@ -178,3 +178,11 @@ export function AlertTriangleIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function CheckIcon(props: IconProps) {
+  return (
+    <Icon width={15} height={15} strokeWidth={3} {...props}>
+      <polyline points="20 6 9 17 4 12" />
+    </Icon>
+  );
+}

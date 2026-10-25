@@ -71,6 +71,18 @@
   --color-photo-dashed: #dbcdba;
   --color-photo-bg: #f4ece1;
   --color-photo-fg: #b0a290;
+
+  /* Auth */
+  --color-auth-bg: #fbf4ec;
+  --color-auth-border: #eadfd0;
+  --color-auth-placeholder: #b6a99b;
+  --color-auth-focus: #f2a78e;
+  --color-auth-gradient-start: #f6a98e;
+  --color-auth-gradient-middle: #f2937a;
+  --color-auth-gradient-end: #ec7e62;
+  --color-consent-bg: #fbf1d6;
+  --color-consent-text: #8a7234;
+  --color-consent-check: #5fb97e;
 }
 
 @theme inline {
