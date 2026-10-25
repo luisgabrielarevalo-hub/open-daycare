@@ -1,0 +1,126 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { ChevronDownIcon } from "@/components/ui/icons";
+
+const ROOMS = ["Soles", "Lunas", "Estrellas"] as const;
+
+type AddChildFormProps = {
+  onCancel: () => void;
+  onSaved: () => void;
+};
+
+const fieldClass =
+  "w-full rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-[13px] text-[15px] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none";
+const labelClass =
+  "mb-2 text-[12px] font-extrabold tracking-[0.7px] text-muted";
+
+export function AddChildForm({ onCancel }: AddChildFormProps) {
+  const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [room, setRoom] = useState("");
+  const [allergies, setAllergies] = useState("");
+  const [medicalNotes, setMedicalNotes] = useState("");
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+  }
+
+  return (
+    <form noValidate onSubmit={handleSubmit}>
+      <div className="flex items-center justify-between border-b border-border px-[26px] py-5">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-[15px] font-bold text-muted"
+        >
+          Cancelar
+        </button>
+        <span id="add-child-title" className="font-display text-[18px] font-semibold text-ink">
+          Agregar niño
+        </span>
+        <button
+          type="submit"
+          className="text-[15px] font-extrabold text-coral-deep-light"
+        >
+          Guardar
+        </button>
+      </div>
+
+      <div className="px-[26px] py-6">
+        <label htmlFor="child-full-name" className={labelClass}>
+          NOMBRE COMPLETO
+        </label>
+        <input
+          id="child-full-name"
+          type="text"
+          value={fullName}
+          onChange={(event) => setFullName(event.target.value)}
+          placeholder="Ej. Martina López"
+          className={`${fieldClass} mb-[18px]`}
+        />
+
+        <div className="mb-[18px] flex gap-3.5">
+          <div className="flex-1">
+            <label htmlFor="child-birth-date" className={labelClass}>
+              FECHA DE NACIMIENTO
+            </label>
+            <input
+              id="child-birth-date"
+              type="date"
+              value={birthDate}
+              onChange={(event) => setBirthDate(event.target.value)}
+              className={fieldClass}
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="child-room" className={labelClass}>
+              SALA
+            </label>
+            <div className="relative">
+              <select
+                id="child-room"
+                value={room}
+                onChange={(event) => setRoom(event.target.value)}
+                className={`${fieldClass} appearance-none pr-10 font-bold ${room ? "" : "text-field-placeholder"}`}
+              >
+                <option value="" disabled>
+                  Seleccioná una sala
+                </option>
+                {ROOMS.map((roomOption) => (
+                  <option key={roomOption} value={roomOption}>
+                    {roomOption}
+                  </option>
+                ))}
+              </select>
+              <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-[#B0A290]" />
+            </div>
+          </div>
+        </div>
+
+        <label htmlFor="child-allergies" className={labelClass}>
+          ALERGIAS (ETIQUETAS)
+        </label>
+        <input
+          id="child-allergies"
+          type="text"
+          value={allergies}
+          onChange={(event) => setAllergies(event.target.value)}
+          placeholder="Ej. Maní, Lactosa"
+          className={`${fieldClass} mb-[18px]`}
+        />
+
+        <label htmlFor="child-medical-notes" className={labelClass}>
+          NOTAS MÉDICAS
+        </label>
+        <textarea
+          id="child-medical-notes"
+          value={medicalNotes}
+          onChange={(event) => setMedicalNotes(event.target.value)}
+          placeholder="Indicaciones, medicación, contactos…"
+          className={`${fieldClass} min-h-[90px] resize-y leading-[1.5]`}
+        />
+      </div>
+    </form>
+  );
+}
