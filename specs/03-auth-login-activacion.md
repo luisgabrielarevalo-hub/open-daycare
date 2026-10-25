@@ -51,25 +51,25 @@ Esta spec no introduce estructuras de datos nuevas. Todo el contenido es estáti
 
 ## Criterios de aceptación
 
-- [ ] `/auth/login` carga sin errores en consola.
-- [ ] `/auth/activate` carga sin errores en consola.
-- [ ] En ≥1024px el login muestra el panel coral con logo, titular, párrafo y "🌿 Guardería Sala Soles".
-- [ ] El login no muestra el label "INGRESO COMO" ni los botones Personal/Familia.
-- [ ] Los campos del login están vacíos y muestran los placeholders `tu@email.com` y `••••••••`.
-- [ ] Por debajo de 1024px el panel coral desaparece y se muestra el logo compacto sobre el formulario.
-- [ ] "Iniciar sesión", "Activar mi cuenta" y "¿Olvidaste tu contraseña?" usan `href="#"` y no ejecutan autenticación ni navegan a otra ruta.
-- [ ] "Activá tu cuenta" navega a `/auth/activate`.
-- [ ] La activación muestra el icono, el título "Bienvenida a OpenDayCare", el subtítulo y la tarjeta "Mateo · Sala Soles".
-- [ ] Los campos de activación están vacíos y muestran los placeholders definidos.
-- [ ] El checkbox de autorización empieza destildado, se puede tildar y destildar, y su texto es el del mockup.
-- [ ] "Activar mi cuenta" usa `href="#"` y no ejecuta ninguna acción.
-- [ ] "Iniciar sesión" en activación navega a `/auth/login`.
-- [ ] Ninguna pantalla de auth usa `AppShell` ni muestra el sidebar.
-- [ ] El fondo de ambas pantallas es `#FBF4EC` y los títulos usan Fredoka; el resto usa Nunito.
-- [ ] Los campos tienen label asociado y `autoComplete` adecuado (`email`, `current-password`, `new-password`, `one-time-code`).
-- [ ] `/` y `/kids` siguen funcionando sin cambios.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] La comparación visual con ambos mockups vía Playwright coincide en estructura, colores, tipografías y espaciados.
+- [x] `/auth/login` carga sin errores en consola.
+- [x] `/auth/activate` carga sin errores en consola.
+- [x] En ≥1024px el login muestra el panel coral con logo, titular, párrafo y "🌿 Guardería Sala Soles".
+- [x] El login no muestra el label "INGRESO COMO" ni los botones Personal/Familia.
+- [x] Los campos del login están vacíos y muestran los placeholders `tu@email.com` y `••••••••`.
+- [x] Por debajo de 1024px el panel coral desaparece y se muestra el logo compacto sobre el formulario.
+- [x] "Iniciar sesión", "Activar mi cuenta" y "¿Olvidaste tu contraseña?" usan `href="#"` y no ejecutan autenticación ni navegan a otra ruta.
+- [x] "Activá tu cuenta" navega a `/auth/activate`.
+- [x] La activación muestra el icono, el título "Bienvenida a OpenDayCare", el subtítulo y la tarjeta "Mateo · Sala Soles".
+- [x] Los campos de activación están vacíos y muestran los placeholders definidos.
+- [x] El checkbox de autorización empieza destildado, se puede tildar y destildar, y su texto es el del mockup.
+- [x] "Activar mi cuenta" usa `href="#"` y no ejecuta ninguna acción.
+- [x] "Iniciar sesión" en activación navega a `/auth/login`.
+- [x] Ninguna pantalla de auth usa `AppShell` ni muestra el sidebar.
+- [x] El fondo de ambas pantallas es `#FBF4EC` y los títulos usan Fredoka; el resto usa Nunito.
+- [x] Los campos tienen label asociado y `autoComplete` adecuado (`email`, `current-password`, `new-password`, `one-time-code`).
+- [x] `/` y `/kids` siguen funcionando sin cambios.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] La comparación visual con ambos mockups vía Playwright coincide en estructura, colores, tipografías y espaciados.
 
 ## Decisiones tomadas y descartadas
 
