@@ -1,8 +1,9 @@
-import { PlusIcon } from "@/components/ui/icons";
+import { LinkParentModal } from "@/components/kids/LinkParentModal";
 import type { LinkedParent } from "@/lib/data";
 
 type LinkedParentsCardProps = {
   parents: LinkedParent[];
+  childFullName: string;
 };
 
 function statusLabel(parent: LinkedParent) {
@@ -11,7 +12,10 @@ function statusLabel(parent: LinkedParent) {
     : "PENDIENTE";
 }
 
-export function LinkedParentsCard({ parents }: LinkedParentsCardProps) {
+export function LinkedParentsCard({
+  parents,
+  childFullName,
+}: LinkedParentsCardProps) {
   return (
     <div className="rounded-[16px] border border-border bg-paper px-[18px] py-4">
       <div className="mb-3.5 text-[12.5px] font-extrabold tracking-[0.8px] text-section-label">
@@ -48,14 +52,7 @@ export function LinkedParentsCard({ parents }: LinkedParentsCardProps) {
             </span>
           </div>
         ))}
-        <a href="#" className="flex items-center gap-3 pt-2">
-          <span className="flex size-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
-            <PlusIcon />
-          </span>
-          <span className="text-[14.5px] font-extrabold text-coral-deep">
-            Vincular otro padre
-          </span>
-        </a>
+        <LinkParentModal childFullName={childFullName} />
       </div>
     </div>
   );
