@@ -43,9 +43,10 @@ function SidebarLink({ href, children, ...props }: SidebarLinkProps) {
 type SidebarProps = {
   profile: StaffProfile;
   activeNav: NavKey;
+  onCompose: () => void;
 };
 
-export function Sidebar({ profile, activeNav }: SidebarProps) {
+export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
   return (
     <aside className="flex h-full w-[248px] flex-none flex-col border-r border-border bg-paper px-4 py-6">
       <SidebarLink
@@ -65,13 +66,14 @@ export function Sidebar({ profile, activeNav }: SidebarProps) {
         </div>
       </SidebarLink>
 
-      <a
-        href="#"
-        className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
+      <button
+        type="button"
+        onClick={onCompose}
+        className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
       >
         <PlusIcon />
         Nueva publicación
-      </a>
+      </button>
 
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map(({ key, label, icon: NavIcon, href }) => (

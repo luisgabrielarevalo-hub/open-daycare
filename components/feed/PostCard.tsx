@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Post, PostKind } from "@/lib/data";
 import {
   CommentIcon,
@@ -7,13 +8,29 @@ import {
 } from "@/components/ui/icons";
 
 const kindStyles: Record<PostKind, { label: string; chip: string }> = {
-  achievement: {
-    label: "LOGRO",
-    chip: "bg-achievement-bg text-achievement-fg",
+  meal: {
+    label: "COMIDA",
+    chip: "bg-meal-bg text-meal-fg",
+  },
+  nap: {
+    label: "SIESTA",
+    chip: "bg-nap-bg text-nap-fg",
   },
   activity: {
     label: "ACTIVIDAD",
     chip: "bg-activity-bg text-activity-fg",
+  },
+  achievement: {
+    label: "LOGRO",
+    chip: "bg-achievement-bg text-achievement-fg",
+  },
+  mood: {
+    label: "ÁNIMO",
+    chip: "bg-mood-bg text-mood-fg",
+  },
+  photo: {
+    label: "FOTO",
+    chip: "bg-kind-photo-bg text-kind-photo-fg",
   },
   announcement: {
     label: "ANUNCIO",
@@ -27,6 +44,7 @@ type PostCardProps = {
 
 export function PostCard({ post }: PostCardProps) {
   const style = kindStyles[post.kind];
+  const photos = post.photos ?? [];
 
   return (
     <article className="rounded-[20px] border border-border bg-paper px-[22px] py-5 shadow-[0_4px_16px_-12px_rgba(120,90,60,0.5)]">
@@ -35,7 +53,7 @@ export function PostCard({ post }: PostCardProps) {
           className="flex size-11 flex-none items-center justify-center rounded-full font-display text-[17px] font-semibold"
           style={{ backgroundColor: post.avatarBg, color: post.avatarColor }}
         >
-          {post.kind === "announcement" ? (
+          {post.audienceKind === "room" ? (
             <MegaphoneIcon />
           ) : (
             post.authorInitial
@@ -63,7 +81,28 @@ export function PostCard({ post }: PostCardProps) {
 
       <p className="text-[15.5px] leading-[1.55] text-body">{post.body}</p>
 
-      {post.photoLabel ? (
+      {photos.length > 0 ? (
+        <div
+          className={`mt-3.5 ${photos.length > 1 ? "grid grid-cols-2 gap-2.5" : ""}`}
+        >
+          {photos.map((photo, index) => (
+            <div
+              key={photo}
+              className={`relative overflow-hidden rounded-2xl bg-photo-bg ${
+                photos.length > 1 ? "aspect-square" : "aspect-[16/10]"
+              }`}
+            >
+              <Image
+                src={photo}
+                alt={`Foto ${index + 1} de la publicación`}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      ) : post.photoLabel ? (
         <a
           href="#"
           className="mt-3.5 flex h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-photo-dashed bg-photo-bg text-photo-fg"

@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { ComposerPrompt } from "@/components/feed/ComposerPrompt";
-import { PostCard } from "@/components/feed/PostCard";
-import { posts, staffProfile } from "@/lib/data";
+import { FeedPosts } from "@/components/feed/FeedPosts";
+import { staffProfile } from "@/lib/data";
 
 export default function Home() {
   const firstName = staffProfile.name.split(" ")[0];
@@ -30,11 +30,7 @@ export default function Home() {
           <span className="h-px flex-1 bg-divider" />
         </div>
 
-        <div className="flex flex-col gap-4">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
+        <FeedPosts />
       </div>
     </AppShell>
   );

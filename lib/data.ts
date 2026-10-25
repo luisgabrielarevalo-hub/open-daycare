@@ -1,8 +1,18 @@
-export type PostKind = "achievement" | "activity" | "announcement";
+export type PostKind =
+  | "meal"
+  | "nap"
+  | "activity"
+  | "achievement"
+  | "mood"
+  | "photo"
+  | "announcement";
+
+export type PostAudienceKind = "child" | "children" | "room";
 
 export type Post = {
   id: string;
   kind: PostKind;
+  audienceKind: PostAudienceKind;
   authorName: string;
   authorInitial: string;
   avatarBg: string;
@@ -13,6 +23,7 @@ export type Post = {
   reactions: number;
   comments: number;
   photoLabel?: string;
+  photos?: string[];
 };
 
 export type StaffProfile = {
@@ -265,6 +276,7 @@ export const posts: Post[] = [
   {
     id: "potty-milestone",
     kind: "achievement",
+    audienceKind: "child",
     authorName: "Mateo",
     authorInitial: "M",
     avatarBg: "#A9D9E8",
@@ -278,6 +290,7 @@ export const posts: Post[] = [
   {
     id: "tempera-painting",
     kind: "activity",
+    audienceKind: "child",
     authorName: "Mateo",
     authorInitial: "M",
     avatarBg: "#A9D9E8",
@@ -292,6 +305,7 @@ export const posts: Post[] = [
   {
     id: "park-reminder",
     kind: "announcement",
+    audienceKind: "room",
     authorName: "Anuncio general",
     authorInitial: "",
     avatarBg: "#CCD8F4",
