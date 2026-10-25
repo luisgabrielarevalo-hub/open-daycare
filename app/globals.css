@@ -91,6 +91,18 @@
   --color-field-focus: #f2a78e;
   --color-danger: #c5413a;
   --color-scrim: rgba(63, 54, 46, 0.35);
+
+  /* Parent invitation */
+  --color-invite-info-bg: #e3ecfb;
+  --color-invite-info-fg: #3f5694;
+  --color-invite-info-icon: #4e72c8;
+  --color-invite-pill-bg: #ccd8f4;
+  --color-invite-pill-border: #9fb8ec;
+  --color-invite-pill-fg: #4e72c8;
+  --color-invite-code-bg: #fbf1d6;
+  --color-invite-code-border: #e6d08a;
+  --color-invite-code-label: #a88526;
+  --color-invite-code-value: #8a7234;
 }
 
 @theme inline {
