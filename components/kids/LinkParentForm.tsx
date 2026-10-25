@@ -21,9 +21,9 @@ type FieldErrors = {
 };
 
 const labelClass =
-  "mb-2 text-[12px] font-extrabold tracking-[0.7px] text-muted short:mb-1.5";
+  "mb-2 text-[12px] leading-[normal] font-extrabold tracking-[0.7px] text-muted short:mb-1.5";
 const fieldClass =
-  "w-full rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-[13px] text-[15px] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none short:py-2.5";
+  "w-full rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-[13px] text-[15px] leading-[normal] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none short:py-2.5";
 const errorClass = "mt-1.5 text-[12.5px] font-semibold text-danger";
 
 export function LinkParentForm({
@@ -85,11 +85,11 @@ export function LinkParentForm({
         <div className="min-w-0">
           <div
             id="link-parent-title"
-            className="font-display text-[18px] font-semibold text-ink"
+            className="font-display text-[18px] leading-[normal] font-semibold text-ink"
           >
             Vincular padre
           </div>
-          <div className="text-[13px] text-muted-soft">
+          <div className="text-[13px] leading-[normal] text-muted-soft">
             a {childFullName}
           </div>
         </div>
@@ -171,7 +171,7 @@ export function LinkParentForm({
         >
           <div
             id="parent-relationship-label"
-            className="mb-2.5 text-[12px] font-extrabold tracking-[0.7px] text-muted short:mb-1.5"
+            className="mb-2.5 text-[12px] leading-[normal] font-extrabold tracking-[0.7px] text-muted short:mb-1.5"
           >
             PARENTESCO
           </div>
@@ -185,7 +185,7 @@ export function LinkParentForm({
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setRelationship(option)}
-                  className={`flex-1 rounded-full border-[1.5px] py-[11px] text-[14px] font-extrabold short:py-2 ${
+                  className={`flex-1 cursor-pointer rounded-full border-[1.5px] py-[11px] text-[14px] leading-[normal] font-extrabold short:py-2 ${
                     isActive
                       ? "border-invite-pill-border bg-invite-pill-bg text-invite-pill-fg"
                       : "border-border bg-paper text-nav-inactive"
@@ -199,20 +199,20 @@ export function LinkParentForm({
         </div>
 
         <div className="mb-5 rounded-[16px] border-[1.5px] border-dashed border-invite-code-border bg-invite-code-bg p-[18px] text-center short:mb-3.5 short:p-3.5">
-          <div className="mb-2 text-[12px] font-extrabold tracking-[0.7px] text-invite-code-label short:mb-1.5">
+          <div className="mb-2 text-[12px] leading-[normal] font-extrabold tracking-[0.7px] text-invite-code-label short:mb-1.5">
             CÓDIGO DE INVITACIÓN
           </div>
-          <div className="font-display text-[34px] font-semibold tracking-[7px] text-invite-code-value short:text-[30px]">
+          <div className="font-display text-[34px] leading-[normal] font-semibold tracking-[7px] text-invite-code-value short:text-[30px]">
             {INVITATION_CODE}
           </div>
-          <div className="mt-1.5 text-[13px] text-invite-code-label short:mt-1">
+          <div className="mt-1.5 text-[13px] leading-[normal] text-invite-code-label short:mt-1">
             Vence en 7 días
           </div>
         </div>
 
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-coral-light to-coral py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] short:py-3"
+          className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-coral-light to-coral py-[14px] text-[15.5px] leading-[normal] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] short:py-3"
         >
           <SendIcon />
           Enviar invitación

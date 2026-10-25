@@ -36,7 +36,7 @@ export function LinkParentModal({ childFullName }: LinkParentModalProps) {
       <button
         type="button"
         onClick={openModal}
-        className="flex w-full items-center gap-3 pt-2 text-left"
+        className="flex w-full cursor-pointer items-center gap-3 pt-2 text-left"
       >
         <span className="flex size-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
           <PlusIcon />
