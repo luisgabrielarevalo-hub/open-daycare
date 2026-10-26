@@ -1,6 +1,6 @@
 # SPEC 07 — Supabase: tabla `daycares`
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** Ninguna (primera spec de base de datos)
 > **Fecha:** 2026-10-26
 > **Objetivo:** Crear `public.daycares` en Supabase con RLS activo y sembrar las cuatro guarderías iniciales, sin conectar la aplicación.
@@ -66,22 +66,22 @@ Convenciones:
 
 ## Criterios de aceptación
 
-- [ ] `public.daycares` existe y tiene exactamente las columnas `id`, `name` y `created_at`, sin otras.
-- [ ] `id` es `uuid`, `PRIMARY KEY`, con default `gen_random_uuid()`.
-- [ ] `name` es `text NOT NULL` y no tiene restricción `UNIQUE`.
-- [ ] `created_at` es `timestamptz NOT NULL` con default `now()`.
-- [ ] RLS está activo en `public.daycares`.
-- [ ] La tabla tiene cero políticas RLS.
-- [ ] Una consulta con `set local role anon` no devuelve filas de `daycares` (cero filas o permiso denegado).
-- [ ] Una consulta con `set local role authenticated` tampoco devuelve filas.
-- [ ] El seed deja exactamente cuatro filas: `Guardería Sala Soles`, `Guardería Rayito de Sol`, `Guardería Los Girasoles` y `Guardería Pequeños Pasos`.
-- [ ] El SQL del seed usa `WHERE NOT EXISTS` por `name` y no contiene UUIDs fijos.
-- [ ] `list_migrations` muestra las migraciones `create_daycares` y `seed_daycares`.
-- [ ] Existe un archivo en `supabase/migrations/` por cada migración, con el mismo prefijo de versión y el mismo SQL aplicado.
-- [ ] `public` no contiene otras tablas además de `daycares`.
-- [ ] `get_advisors` no reporta errores de seguridad distintos del aviso informativo esperado por RLS sin políticas.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `git diff --stat` no muestra cambios en `app/`, `components/` ni `lib/`.
+- [x] `public.daycares` existe y tiene exactamente las columnas `id`, `name` y `created_at`, sin otras.
+- [x] `id` es `uuid`, `PRIMARY KEY`, con default `gen_random_uuid()`.
+- [x] `name` es `text NOT NULL` y no tiene restricción `UNIQUE`.
+- [x] `created_at` es `timestamptz NOT NULL` con default `now()`.
+- [x] RLS está activo en `public.daycares`.
+- [x] La tabla tiene cero políticas RLS.
+- [x] Una consulta con `set local role anon` no devuelve filas de `daycares` (cero filas o permiso denegado).
+- [x] Una consulta con `set local role authenticated` tampoco devuelve filas.
+- [x] El seed deja exactamente cuatro filas: `Guardería Sala Soles`, `Guardería Rayito de Sol`, `Guardería Los Girasoles` y `Guardería Pequeños Pasos`.
+- [x] El SQL del seed usa `WHERE NOT EXISTS` por `name` y no contiene UUIDs fijos.
+- [x] `list_migrations` muestra las migraciones `create_daycares` y `seed_daycares`.
+- [x] Existe un archivo en `supabase/migrations/` por cada migración, con el mismo prefijo de versión y el mismo SQL aplicado.
+- [x] `public` no contiene otras tablas además de `daycares`.
+- [ ] `get_advisors` no reporta errores de seguridad distintos del aviso informativo esperado por RLS sin políticas. **Pendiente:** además del INFO `rls_enabled_no_policy` esperado, `get_advisors` reporta dos WARN preexistentes por `public.rls_auto_enable()` (`SECURITY DEFINER` ejecutable por `anon` y `authenticated`, ligada al event trigger `ensure_rls`). Es ajena a esta spec y queda fuera de alcance; se abordará en una spec propia de hardenizado de funciones y grants.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `git diff --stat` no muestra cambios en `app/`, `components/` ni `lib/`.
 
 ## Decisiones tomadas y descartadas
 
