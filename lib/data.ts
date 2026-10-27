@@ -44,6 +44,11 @@ export const staffProfile: StaffProfile = {
   dateLabel: "martes 17 jun",
 };
 
+export const feedSummary = {
+  childCount: 12,
+  dateLabel: "martes 17 jun",
+} as const;
+
 export type ChildTagTone = "allergy" | "link";
 
 export type ChildTag = {
