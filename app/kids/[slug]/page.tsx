@@ -4,18 +4,14 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AllergyNote } from "@/components/kids/AllergyNote";
 import { LinkedParentsCard } from "@/components/kids/LinkedParentsCard";
 import { ChevronLeftIcon, SunIcon } from "@/components/ui/icons";
-import { children, staffProfile } from "@/lib/data";
+import { requireProfile } from "@/lib/auth/profile";
+import { children } from "@/lib/data";
 
-export function generateStaticParams() {
-  return children.map((child) => ({ slug: child.id }));
-}
-
-export default async function ChildProfilePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">) {
+  const [{ slug }, profile] = await Promise.all([
+    props.params,
+    requireProfile(),
+  ]);
   const child = children.find((item) => item.id === slug);
 
   if (!child) notFound();
@@ -27,7 +23,7 @@ export default async function ChildProfilePage({
   ];
 
   return (
-    <AppShell profile={staffProfile} activeNav="kids">
+    <AppShell profile={profile} activeNav="kids">
       <div className="mx-auto w-full max-w-[820px] px-10 pt-[34px] pb-20">
         <Link
           href="/kids"

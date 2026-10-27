@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { AnchorHTMLAttributes } from "react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import type { StaffProfile } from "@/lib/data";
 import {
   BellIcon,
   ChildrenIcon,
   HomeIcon,
-  LogoutIcon,
   PlusIcon,
   SunIcon,
   UserIcon,
@@ -60,9 +60,11 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
           <div className="font-display text-[17px] leading-none font-semibold text-ink">
             OpenDayCare
           </div>
-          <div className="mt-0.5 text-[11.5px] text-muted-soft">
-            {profile.room}
-          </div>
+          {profile.room ? (
+            <div className="mt-0.5 text-[11.5px] text-muted-soft">
+              {profile.room}
+            </div>
+          ) : null}
         </div>
       </SidebarLink>
 
@@ -104,13 +106,7 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
             </div>
             <div className="text-xs text-muted-soft">{profile.role}</div>
           </div>
-          <a
-            href="#"
-            title="Cerrar sesión"
-            className="flex size-8 flex-none items-center justify-center rounded-[10px] bg-cream text-muted"
-          >
-            <LogoutIcon />
-          </a>
+          <LogoutButton />
         </div>
       </div>
     </aside>

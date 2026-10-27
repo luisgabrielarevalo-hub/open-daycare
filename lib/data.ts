@@ -35,14 +35,10 @@ export type StaffProfile = {
   dateLabel: string;
 };
 
-export const staffProfile: StaffProfile = {
-  name: "Caro Giménez",
-  role: "Maestra · Soles",
-  initial: "C",
-  room: "Sala Soles",
+export const feedSummary = {
   childCount: 12,
   dateLabel: "martes 17 jun",
-};
+} as const;
 
 export type ChildTagTone = "allergy" | "link";
 

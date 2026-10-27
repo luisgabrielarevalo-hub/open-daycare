@@ -25,7 +25,8 @@ with demo as (
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
-  created_at, updated_at
+  created_at, updated_at,
+  confirmation_token, recovery_token, email_change_token_new, email_change
 )
 select
   '00000000-0000-0000-0000-000000000000'::uuid,
@@ -42,7 +43,11 @@ select
     'daycare_id', d.daycare_id
   ),
   now(),
-  now()
+  now(),
+  '',
+  '',
+  '',
+  ''
 from demo d
 where d.daycare_id is not null
   and not exists (

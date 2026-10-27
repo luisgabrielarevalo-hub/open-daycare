@@ -1,11 +1,13 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { AddChildModal } from "@/components/kids/AddChildModal";
 import { KidsDirectory } from "@/components/kids/KidsDirectory";
-import { staffProfile } from "@/lib/data";
+import { requireProfile } from "@/lib/auth/profile";
 
-export default function KidsPage() {
+export default async function KidsPage() {
+  const profile = await requireProfile();
+
   return (
-    <AppShell profile={staffProfile} activeNav="kids">
+    <AppShell profile={profile} activeNav="kids">
       <div className="mx-auto w-full max-w-[880px] px-10 pt-[34px] pb-20">
         <div className="mb-[22px] flex items-end justify-between gap-4">
           <div>
