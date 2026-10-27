@@ -1,6 +1,6 @@
 # SPEC 08 — Supabase: tabla `users`, enums y usuario demo
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 07 (tabla `public.daycares`, convención de migraciones con MCP y RLS sin políticas)
 > **Fecha:** 2026-10-26
 > **Objetivo:** Crear `public.users` con los enums `user_role` y `user_status`, sus claves foráneas a `auth.users` y `daycares`, RLS sin políticas y un usuario staff demo con login funcional, sin conectar la aplicación.
@@ -204,36 +204,36 @@ on conflict (id) do nothing;
 
 ## Criterios de aceptación
 
-- [ ] `public.user_role` existe con exactamente los valores `staff`, `parent` y `admin`, en ese orden.
-- [ ] `public.user_status` existe con exactamente los valores `pending` y `active`, en ese orden.
-- [ ] `public.users` existe con exactamente diez columnas: `id`, `daycare_id`, `role`, `status`, `full_name`, `avatar_url`, `notify_on_post`, `daily_summary_enabled`, `created_at` y `updated_at`.
-- [ ] `id` es `uuid`, `PRIMARY KEY`, con FK a `auth.users(id)` y `ON DELETE CASCADE`.
-- [ ] `daycare_id` es `uuid NOT NULL`, con FK a `public.daycares(id)` y `ON DELETE RESTRICT`.
-- [ ] `role` es `public.user_role NOT NULL`.
-- [ ] `status` es `public.user_status NOT NULL` con default `'active'`.
-- [ ] `full_name` es `text NOT NULL`.
-- [ ] `avatar_url` es `text` nullable.
-- [ ] `notify_on_post` y `daily_summary_enabled` son `boolean NOT NULL` con default `true`.
-- [ ] `created_at` y `updated_at` son `timestamptz NOT NULL` con default `now()`.
-- [ ] Existe el índice `users_daycare_id_idx` sobre `public.users(daycare_id)` y no hay otros índices añadidos por esta spec.
-- [ ] RLS está activo en `public.users` y la tabla tiene cero políticas.
-- [ ] Una consulta con `set local role anon` no devuelve filas de `public.users` (cero filas o permiso denegado).
-- [ ] Una consulta con `set local role authenticated` tampoco devuelve filas.
-- [ ] Las migraciones no contienen `GRANT` ni `REVOKE` sobre `public.users`.
-- [ ] El seed crea exactamente una fila en `auth.users` con email `luisarevalo@google.com`, id `00000000-0000-4000-8000-000000000001`, `email_confirmed_at` no nulo, `aud` y `role` `authenticated`.
-- [ ] El seed crea exactamente una fila en `auth.identities` para ese usuario, con provider `email`, `provider_id` igual al UUID del usuario e `identity_data` con `sub`, `email`, `email_verified` y `phone_verified`.
-- [ ] El seed crea exactamente una fila en `public.users` con el mismo UUID, `role` `staff`, `status` `active`, `full_name` "Luis Arévalo" y `daycare_id` de "Guardería Sala Soles".
+- [x] `public.user_role` existe con exactamente los valores `staff`, `parent` y `admin`, en ese orden.
+- [x] `public.user_status` existe con exactamente los valores `pending` y `active`, en ese orden.
+- [x] `public.users` existe con exactamente diez columnas: `id`, `daycare_id`, `role`, `status`, `full_name`, `avatar_url`, `notify_on_post`, `daily_summary_enabled`, `created_at` y `updated_at`.
+- [x] `id` es `uuid`, `PRIMARY KEY`, con FK a `auth.users(id)` y `ON DELETE CASCADE`.
+- [x] `daycare_id` es `uuid NOT NULL`, con FK a `public.daycares(id)` y `ON DELETE RESTRICT`.
+- [x] `role` es `public.user_role NOT NULL`.
+- [x] `status` es `public.user_status NOT NULL` con default `'active'`.
+- [x] `full_name` es `text NOT NULL`.
+- [x] `avatar_url` es `text` nullable.
+- [x] `notify_on_post` y `daily_summary_enabled` son `boolean NOT NULL` con default `true`.
+- [x] `created_at` y `updated_at` son `timestamptz NOT NULL` con default `now()`.
+- [x] Existe el índice `users_daycare_id_idx` sobre `public.users(daycare_id)` y no hay otros índices añadidos por esta spec.
+- [x] RLS está activo en `public.users` y la tabla tiene cero políticas.
+- [x] Una consulta con `set local role anon` no devuelve filas de `public.users` (cero filas o permiso denegado).
+- [x] Una consulta con `set local role authenticated` tampoco devuelve filas.
+- [x] Las migraciones no contienen `GRANT` ni `REVOKE` sobre `public.users`.
+- [x] El seed crea exactamente una fila en `auth.users` con email `luisarevalo@google.com`, id `00000000-0000-4000-8000-000000000001`, `email_confirmed_at` no nulo, `aud` y `role` `authenticated`.
+- [x] El seed crea exactamente una fila en `auth.identities` para ese usuario, con provider `email`, `provider_id` igual al UUID del usuario e `identity_data` con `sub`, `email`, `email_verified` y `phone_verified`.
+- [x] El seed crea exactamente una fila en `public.users` con el mismo UUID, `role` `staff`, `status` `active`, `full_name` "Luis Arévalo" y `daycare_id` de "Guardería Sala Soles".
 - [ ] `auth.users.encrypted_password` del demo es un hash bcrypt (prefijo `$2`) y valida la contraseña demo acordada fuera del repo.
-- [ ] Ningún archivo versionado contiene la contraseña demo en texto plano ni una llamada a `crypt()` con ella.
-- [ ] Reejecutar el SQL del seed deja exactamente una fila en `auth.users`, una en `auth.identities` y una en `public.users`.
-- [ ] Esta spec no crea triggers sobre `auth.users` ni sobre `public.users`, ni funciones persistentes.
-- [ ] `list_migrations` muestra las migraciones `create_user_enums`, `create_users` y `seed_demo_user`.
-- [ ] Existe un archivo en `supabase/migrations/` por cada migración, con el mismo prefijo de versión y el mismo SQL aplicado.
-- [ ] `public` contiene únicamente `daycares` y `users`.
-- [ ] `daycares` sigue teniendo exactamente las cuatro filas de la SPEC 07, sin cambios.
-- [ ] `get_advisors` no reporta errores nuevos distintos del INFO esperado por RLS sin políticas y los WARN preexistentes de `public.rls_auto_enable()`.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `git diff --stat` no muestra cambios en `app/`, `components/` ni `lib/`.
+- [x] Ningún archivo versionado contiene la contraseña demo en texto plano ni una llamada a `crypt()` con ella.
+- [x] Reejecutar el SQL del seed deja exactamente una fila en `auth.users`, una en `auth.identities` y una en `public.users`.
+- [x] Esta spec no crea triggers sobre `auth.users` ni sobre `public.users`, ni funciones persistentes.
+- [x] `list_migrations` muestra las migraciones `create_user_enums`, `create_users` y `seed_demo_user`.
+- [x] Existe un archivo en `supabase/migrations/` por cada migración, con el mismo prefijo de versión y el mismo SQL aplicado.
+- [x] `public` contiene únicamente `daycares` y `users`.
+- [x] `daycares` sigue teniendo exactamente las cuatro filas de la SPEC 07, sin cambios.
+- [x] `get_advisors` no reporta errores nuevos distintos del INFO esperado por RLS sin políticas y los WARN preexistentes de `public.rls_auto_enable()`.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `git diff --stat` no muestra cambios en `app/`, `components/` ni `lib/`.
 
 ## Decisiones tomadas y descartadas
 
