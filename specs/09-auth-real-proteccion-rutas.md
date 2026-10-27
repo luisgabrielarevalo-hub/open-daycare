@@ -1,6 +1,6 @@
 # SPEC 09 — Auth real y protección de rutas
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 03 (pantallas de auth), SPEC 08 (usuario demo en `auth.users` y `public.users`), SPEC 10 (políticas RLS de lectura del perfil; implementar antes)
 > **Fecha:** 2026-10-27
 > **Objetivo:** Conectar `/auth/login` a Supabase con email y contraseña, cerrar sesión desde el sidebar y proteger `/`, `/kids` y `/kids/[slug]` con proxy y guard server-side, mostrando el perfil real del usuario autenticado.
@@ -115,36 +115,36 @@ const feedSummary = {
 
 ## Criterios de aceptación
 
-- [ ] `/auth/login` carga sin errores en consola.
-- [ ] El formulario envía por Server Action y llama a `signInWithPassword`.
-- [ ] Con las credenciales del usuario demo de SPEC 08, el login redirige a `/` y la sesión persiste al recargar.
-- [ ] Con credenciales inválidas aparece `Email o contraseña incorrectos.`, no hay redirección, el email se conserva, la contraseña se limpia y el botón se reactiva.
-- [ ] Con campos vacíos, la validación nativa bloquea el envío; el Server Action también rechaza vacíos con `Ingresá tu email y contraseña.`
-- [ ] Mientras se envía, el botón está deshabilitado y muestra `Ingresando…`.
-- [ ] Sin sesión, `/` redirige a `/auth/login?next=%2F`.
-- [ ] Sin sesión, `/kids` redirige a `/auth/login?next=%2Fkids`.
-- [ ] Sin sesión, `/kids/mateo-fernandez` redirige con `next` igual a esa ruta.
-- [ ] Después de iniciar sesión desde una redirección, el usuario llega a la ruta de `next`.
-- [ ] `next` externo (`//evil.com`), con backslash, absoluto o `/auth/*` cae a `/`.
-- [ ] Con sesión, `/auth/login` redirige a `/`.
-- [ ] Con sesión, `/auth/activate` redirige a `/`.
-- [ ] Sin sesión, `/auth/activate` sigue accesible y visual.
-- [ ] El sidebar muestra `Luis Arévalo`, `Staff` y `Sala Soles` para el usuario demo.
-- [ ] El encabezado del feed muestra `GUARDERÍA · SALA SOLES` y el saludo `Buenas, Luis`.
-- [ ] El composer muestra la inicial `L`.
-- [ ] `staff` → `Staff`, `parent` → `Familia`, `admin` → `Admin`.
-- [ ] Si el usuario no tiene fila en `public.users`, la app no falla: usa el fallback, rol `Staff` y oculta la sala.
-- [ ] No se renderiza `avatar_url`; se mantiene la inicial.
-- [ ] `childCount` y `dateLabel` siguen siendo `12 niños · martes 17 jun`.
-- [ ] El logout llama a `signOut`, limpia la sesión y recarga `/auth/login` por completo.
-- [ ] Después del logout, las rutas protegidas vuelven a redirigir al login.
-- [ ] `¿Olvidaste tu contraseña?` sigue con `href="#"`.
-- [ ] La app no escribe en `public.users` ni en `public.daycares`.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `npm run build` termina correctamente con las rutas protegidas dinámicas.
-- [ ] Playwright verifica login, redirecciones, `next`, logout y perfil a 1440×900 y 390×844.
-- [ ] Las pantallas de login y activación conservan el diseño de SPEC 03 salvo los estados de error y carga.
-- [ ] Ningún log ni archivo versionado contiene la contraseña demo.
+- [x] `/auth/login` carga sin errores en consola.
+- [x] El formulario envía por Server Action y llama a `signInWithPassword`.
+- [x] Con las credenciales del usuario demo de SPEC 08, el login redirige a `/` y la sesión persiste al recargar.
+- [x] Con credenciales inválidas aparece `Email o contraseña incorrectos.`, no hay redirección, el email se conserva, la contraseña se limpia y el botón se reactiva.
+- [x] Con campos vacíos, la validación nativa bloquea el envío; el Server Action también rechaza vacíos con `Ingresá tu email y contraseña.`
+- [x] Mientras se envía, el botón está deshabilitado y muestra `Ingresando…`.
+- [x] Sin sesión, `/` redirige a `/auth/login?next=%2F`.
+- [x] Sin sesión, `/kids` redirige a `/auth/login?next=%2Fkids`.
+- [x] Sin sesión, `/kids/mateo-fernandez` redirige con `next` igual a esa ruta.
+- [x] Después de iniciar sesión desde una redirección, el usuario llega a la ruta de `next`.
+- [x] `next` externo (`//evil.com`), con backslash, absoluto o `/auth/*` cae a `/`.
+- [x] Con sesión, `/auth/login` redirige a `/`.
+- [x] Con sesión, `/auth/activate` redirige a `/`.
+- [x] Sin sesión, `/auth/activate` sigue accesible y visual.
+- [x] El sidebar muestra `Luis Arévalo`, `Staff` y `Sala Soles` para el usuario demo.
+- [x] El encabezado del feed muestra `GUARDERÍA · SALA SOLES` y el saludo `Buenas, Luis`.
+- [x] El composer muestra la inicial `L`.
+- [x] `staff` → `Staff`, `parent` → `Familia`, `admin` → `Admin`.
+- [x] Si el usuario no tiene fila en `public.users`, la app no falla: usa el fallback, rol `Staff` y oculta la sala.
+- [x] No se renderiza `avatar_url`; se mantiene la inicial.
+- [x] `childCount` y `dateLabel` siguen siendo `12 niños · martes 17 jun`.
+- [x] El logout llama a `signOut`, limpia la sesión y recarga `/auth/login` por completo.
+- [x] Después del logout, las rutas protegidas vuelven a redirigir al login.
+- [x] `¿Olvidaste tu contraseña?` sigue con `href="#"`.
+- [x] La app no escribe en `public.users` ni en `public.daycares`.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `npm run build` termina correctamente con las rutas protegidas dinámicas.
+- [x] Playwright verifica login, redirecciones, `next`, logout y perfil a 1440×900 y 390×844.
+- [x] Las pantallas de login y activación conservan el diseño de SPEC 03 salvo los estados de error y carga.
+- [x] Ningún log ni archivo versionado contiene la contraseña demo.
 
 ## Decisiones tomadas y descartadas
 
