@@ -6,11 +6,13 @@ export const metadata: Metadata = {
   title: "Iniciar sesión · OpenDayCare",
 };
 
-export default function LoginPage() {
+export default async function LoginPage(props: PageProps<"/auth/login">) {
+  const { next } = await props.searchParams;
+
   return (
     <main className="grid min-h-screen bg-auth-bg lg:grid-cols-[1.05fr_1fr]">
       <LoginHero />
-      <LoginForm />
+      <LoginForm next={typeof next === "string" ? next : ""} />
     </main>
   );
 }
