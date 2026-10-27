@@ -1,27 +1,28 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { ComposerPrompt } from "@/components/feed/ComposerPrompt";
 import { FeedPosts } from "@/components/feed/FeedPosts";
-import { staffProfile } from "@/lib/data";
+import { requireProfile } from "@/lib/auth/profile";
 
-export default function Home() {
-  const firstName = staffProfile.name.split(" ")[0];
+export default async function Home() {
+  const profile = await requireProfile();
+  const firstName = profile.name.split(" ")[0];
 
   return (
-    <AppShell profile={staffProfile} activeNav="feed">
+    <AppShell profile={profile} activeNav="feed">
       <div className="mx-auto w-full max-w-[760px] px-10 pt-[34px] pb-20">
         <div className="mb-6">
           <div className="mb-1 text-[12.5px] font-extrabold tracking-[0.8px] text-coral-deep-light">
-            GUARDERÍA · {staffProfile.room.toUpperCase()}
+            {profile.room ? `GUARDERÍA · ${profile.room.toUpperCase()}` : "GUARDERÍA"}
           </div>
           <h1 className="font-display text-[30px] font-semibold text-ink">
             Buenas, {firstName}
           </h1>
           <p className="mt-[5px] text-[14.5px] text-muted">
-            {staffProfile.childCount} niños · {staffProfile.dateLabel}
+            {profile.childCount} niños · {profile.dateLabel}
           </p>
         </div>
 
-        <ComposerPrompt initial={staffProfile.initial} />
+        <ComposerPrompt initial={profile.initial} />
 
         <div className="mb-3.5 flex items-center gap-3.5">
           <span className="text-[12.5px] font-extrabold tracking-[0.8px] text-section-label">

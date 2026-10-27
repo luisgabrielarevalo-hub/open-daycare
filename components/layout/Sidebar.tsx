@@ -60,9 +60,11 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
           <div className="font-display text-[17px] leading-none font-semibold text-ink">
             OpenDayCare
           </div>
-          <div className="mt-0.5 text-[11.5px] text-muted-soft">
-            {profile.room}
-          </div>
+          {profile.room ? (
+            <div className="mt-0.5 text-[11.5px] text-muted-soft">
+              {profile.room}
+            </div>
+          ) : null}
         </div>
       </SidebarLink>
 
