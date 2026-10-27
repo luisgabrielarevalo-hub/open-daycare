@@ -1,6 +1,6 @@
 # SPEC 10 — Supabase: RLS de lectura del perfil
 
-> **Estado:** Borrador
+> **Estado:** Implementado
 > **Depende de:** SPEC 07 (tabla `public.daycares`), SPEC 08 (tabla `public.users`, usuario demo)
 > **Fecha:** 2026-10-27
 > **Objetivo:** Añadir políticas RLS de `SELECT` para que un usuario autenticado lea su propia fila de `public.users` y la guardería a la que pertenece, sin abrir escrituras ni acceso anónimo.
@@ -122,21 +122,21 @@ using (
 
 ## Criterios de aceptación
 
-- [ ] `list_migrations` muestra la migración `add_profile_read_policies`.
-- [ ] Existe un archivo en `supabase/migrations/` con el mismo prefijo de versión y el SQL exacto aplicado.
-- [ ] `pg_policies` muestra `users_select_own` en `public.users`, con `cmd = SELECT`, roles `{authenticated}` y `qual` equivalente a `auth.uid() = id`.
-- [ ] `pg_policies` muestra `daycares_select_own` en `public.daycares`, con `cmd = SELECT`, roles `{authenticated}` y una condición que limita a la guardería del usuario.
-- [ ] No hay políticas de `INSERT`, `UPDATE` ni `DELETE` en `public.users` ni en `public.daycares`.
-- [ ] La migración no contiene `GRANT` ni `REVOKE`.
-- [ ] `anon` obtiene `0` filas de `public.users` y `0` de `public.daycares`.
-- [ ] El usuario demo obtiene exactamente su propia fila de `public.users`.
-- [ ] El usuario demo obtiene exactamente `Guardería Sala Soles` de `public.daycares`, no las otras tres.
-- [ ] Un UUID distinto obtiene `0` usuarios y `0` guarderías.
-- [ ] `public.users` sigue con una fila y `public.daycares` con cuatro.
-- [ ] `get_advisors` ya no reporta “RLS enabled no policy” para `public.users` ni `public.daycares`, y no aparecen errores nuevos distintos de los WARN preexistentes.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `git diff --stat` solo muestra la migración y esta spec.
-- [ ] `app/`, `components/` y `lib/` no cambiaron.
+- [x] `list_migrations` muestra la migración `add_profile_read_policies`.
+- [x] Existe un archivo en `supabase/migrations/` con el mismo prefijo de versión y el SQL exacto aplicado.
+- [x] `pg_policies` muestra `users_select_own` en `public.users`, con `cmd = SELECT`, roles `{authenticated}` y `qual` equivalente a `auth.uid() = id`.
+- [x] `pg_policies` muestra `daycares_select_own` en `public.daycares`, con `cmd = SELECT`, roles `{authenticated}` y una condición que limita a la guardería del usuario.
+- [x] No hay políticas de `INSERT`, `UPDATE` ni `DELETE` en `public.users` ni en `public.daycares`.
+- [x] La migración no contiene `GRANT` ni `REVOKE`.
+- [x] `anon` obtiene `0` filas de `public.users` y `0` de `public.daycares`.
+- [x] El usuario demo obtiene exactamente su propia fila de `public.users`.
+- [x] El usuario demo obtiene exactamente `Guardería Sala Soles` de `public.daycares`, no las otras tres.
+- [x] Un UUID distinto obtiene `0` usuarios y `0` guarderías.
+- [x] `public.users` sigue con una fila y `public.daycares` con cuatro.
+- [x] `get_advisors` ya no reporta “RLS enabled no policy” para `public.users` ni `public.daycares`, y no aparecen errores nuevos distintos de los WARN preexistentes.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `git diff --stat` solo muestra la migración y esta spec.
+- [x] `app/`, `components/` y `lib/` no cambiaron.
 
 ## Decisiones tomadas y descartadas
 
