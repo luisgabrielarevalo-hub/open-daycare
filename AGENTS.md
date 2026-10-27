@@ -27,6 +27,7 @@ A daycare (guardería) web app to be implemented from the design prototypes in `
 - `components/` — grouped by purpose: `layout/` (AppShell, Sidebar), `feed/` (PostCard, ComposerPrompt, FeedProvider, CreatePostModal/Form), `kids/` (ChildCard, KidsDirectory, child profile pieces, AddChildModal/Form, LinkParentModal/Form), `auth/` (Login/Activate forms and hero), `ui/` (icons).
 - `lib/data.ts` — static types (`Post`, `Child`, `StaffProfile`, …) and mock data; there is no backend or database yet.
 - `specs/` — one spec per screen/feature, named `NN-slug.md`; `.spec-config.yml` holds the workflow settings.
+- `database/` — all database-related specs and migrations live here (see "Spec Driven Development").
 - `references/` — the `.dc.html` mockups and their PNG renders; the DB schema reference lives outside the repo (see MCPs).
 
 ## Commands
@@ -57,6 +58,8 @@ A daycare (guardería) web app to be implemented from the design prototypes in `
 ## Spec Driven Development
 
 Work one screen/feature per spec. Specs live in `specs/NN-slug.md`, written in Spanish, with an `**Estado:**` field and a "Criterios de aceptación" checklist (checkboxes are the source of truth for progress).
+
+**Database specs:** any spec related to the database (schema, tables, migrations, RLS, seed data, etc.) goes in `database/` — never in `specs/` — using the same naming and format conventions (`NN-slug.md`, Spanish, `**Estado:**`, acceptance checklist).
 
 - `/spec` — design the spec section by section.
 - `/spec-impl` — implement an approved spec (`Estado: Aprobado`), create/switch to the `spec-NN-slug` branch (`AutoCreateBranch` in `specs/.spec-config.yml`), step by step with diff reviews.
