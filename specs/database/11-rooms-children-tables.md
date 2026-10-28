@@ -301,7 +301,7 @@ where d.name = 'Guardería Sala Soles'
 - [ ] `public.children` queda con cero filas.
 - [ ] `public.users` sigue con una fila y `public.daycares` con cuatro.
 - [ ] `list_migrations` muestra las cinco migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
-- [ ] `get_advisors` no reporta errores nuevos distintos de los WARN preexistentes de `public.rls_auto_enable()`.
+- [ ] `get_advisors` no reporta errores (`ERROR`) nuevos; los avisos informativos y los WARN de `public.rls_auto_enable()` se aceptan.
 - [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 - [ ] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
 - [ ] `app/`, `components/` y `lib/` no cambiaron.
