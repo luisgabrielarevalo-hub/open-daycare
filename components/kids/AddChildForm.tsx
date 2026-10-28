@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useActionState, useEffect, useState, type FormEvent } from "react";
+import { createChild, type CreateChildState } from "@/app/kids/actions";
 import { ChevronDownIcon } from "@/components/ui/icons";
-
-const ROOMS = ["Soles", "Lunas", "Estrellas"] as const;
+import type { RoomOption } from "@/lib/kids/children";
 
 type AddChildFormProps = {
+  rooms: RoomOption[];
   onCancel: () => void;
   onSaved: () => void;
 };
@@ -14,6 +15,12 @@ type FieldErrors = {
   fullName?: string;
   birthDate?: string;
   room?: string;
+};
+
+const initialState: CreateChildState = {
+  status: "idle",
+  message: null,
+  attempt: 0,
 };
 
 const fieldClass =
@@ -29,13 +36,23 @@ function getTodayValue() {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
-export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
+export function AddChildForm({ rooms, onCancel, onSaved }: AddChildFormProps) {
+  const [state, formAction, pending] = useActionState(
+    createChild,
+    initialState,
+  );
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [room, setRoom] = useState("");
   const [allergies, setAllergies] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
+
+  useEffect(() => {
+    if (state.status === "success") {
+      onSaved();
+    }
+  }, [state, onSaved]);
 
   function clearError(field: keyof FieldErrors) {
     setErrors((previous) => {
@@ -67,25 +84,16 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
 
-    const isValid = Object.keys(nextErrors).length === 0;
-    if (!isValid) {
-      return;
+    if (Object.keys(nextErrors).length > 0) {
+      event.preventDefault();
     }
-
-    setFullName("");
-    setBirthDate("");
-    setRoom("");
-    setAllergies("");
-    setMedicalNotes("");
-    onSaved();
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <form noValidate action={formAction} onSubmit={handleSubmit}>
       <div className="flex items-center justify-between border-b border-border px-[26px] py-5">
         <button
           type="button"
@@ -102,9 +110,10 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
         </span>
         <button
           type="submit"
-          className="text-[15px] font-extrabold text-coral-deep-light"
+          disabled={pending}
+          className="text-[15px] font-extrabold text-coral-deep-light disabled:cursor-not-allowed disabled:opacity-70"
         >
-          Guardar
+          {pending ? "Guardando…" : "Guardar"}
         </button>
       </div>
 
@@ -115,6 +124,7 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
           </label>
           <input
             id="child-full-name"
+            name="fullName"
             type="text"
             value={fullName}
             onChange={(event) => {
@@ -142,6 +152,7 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
             </label>
             <input
               id="child-birth-date"
+              name="birthDate"
               type="date"
               value={birthDate}
               onChange={(event) => {
@@ -167,6 +178,7 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
             <div className="relative">
               <select
                 id="child-room"
+                name="roomId"
                 value={room}
                 onChange={(event) => {
                   setRoom(event.target.value);
@@ -179,9 +191,9 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
                 <option value="" disabled>
                   Seleccioná una sala
                 </option>
-                {ROOMS.map((roomOption) => (
-                  <option key={roomOption} value={roomOption}>
-                    {roomOption}
+                {rooms.map((roomOption) => (
+                  <option key={roomOption.id} value={roomOption.id}>
+                    {roomOption.name}
                   </option>
                 ))}
               </select>
@@ -201,6 +213,7 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
           </label>
           <input
             id="child-allergies"
+            name="allergies"
             type="text"
             value={allergies}
             onChange={(event) => setAllergies(event.target.value)}
@@ -215,12 +228,19 @@ export function AddChildForm({ onCancel, onSaved }: AddChildFormProps) {
           </label>
           <textarea
             id="child-medical-notes"
+            name="medicalNotes"
             value={medicalNotes}
             onChange={(event) => setMedicalNotes(event.target.value)}
             placeholder="Indicaciones, medicación, contactos…"
             className={`${fieldClass} min-h-[90px] resize-y leading-[1.5]`}
           />
         </div>
+
+        {state.status === "error" && state.message ? (
+          <p role="alert" className="mt-4 text-[13px] font-bold text-danger">
+            {state.message}
+          </p>
+        ) : null}
       </div>
     </form>
   );

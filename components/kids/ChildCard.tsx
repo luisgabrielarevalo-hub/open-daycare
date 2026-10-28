@@ -14,6 +14,7 @@ type ChildCardProps = {
 
 export function ChildCard({ child }: ChildCardProps) {
   const initial = child.fullName.charAt(0);
+  const tags = child.tags?.length ? child.tags : child.tag ? [child.tag] : [];
 
   return (
     <Link
@@ -34,16 +35,21 @@ export function ChildCard({ child }: ChildCardProps) {
           {child.ageLabel} · {parentsLabel(child.parents.length)}
         </div>
       </div>
-      {child.tag ? (
-        <span
-          className={`flex-none rounded-full px-[9px] py-[5px] text-[11px] font-extrabold ${
-            child.tag.tone === "allergy"
-              ? "bg-tag-allergy-bg text-tag-allergy-fg"
-              : "bg-tag-link-bg text-tag-link-fg"
-          }`}
-        >
-          {child.tag.label}
-        </span>
+      {tags.length > 0 ? (
+        <div className="flex flex-none flex-wrap justify-end gap-1.5">
+          {tags.map((tag) => (
+            <span
+              key={tag.label}
+              className={`rounded-full px-[9px] py-[5px] text-[11px] font-extrabold ${
+                tag.tone === "allergy"
+                  ? "bg-tag-allergy-bg text-tag-allergy-fg"
+                  : "bg-tag-link-bg text-tag-link-fg"
+              }`}
+            >
+              {tag.label}
+            </span>
+          ))}
+        </div>
       ) : (
         <ChevronRightIcon className="flex-none text-[#CBB89F]" />
       )}

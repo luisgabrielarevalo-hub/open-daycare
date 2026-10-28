@@ -1,6 +1,6 @@
 # SPEC 12 — Niños: alta persistida, listado y perfil desde Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02 (páginas `/kids` y `/kids/[slug]`), SPEC 04 (modal "Agregar niño"), SPEC 09 (auth, `requireProfile` y protección de rutas), SPEC 11 (tablas `rooms` y `children` con RLS; implementar antes)
 > **Fecha:** 2026-10-28
 > **Objetivo:** Guardar el niño del modal en `public.children`, leer `/kids` y `/kids/[slug]` desde Supabase con salas reales, agrupación por sala, estado vacío y conteo real en el feed, eliminando los niños mock.
@@ -131,41 +131,41 @@ type ParsedAllergies = {
 
 ## Criterios de aceptación
 
-- [ ] `/kids` carga sin errores en consola y sin niños muestra el estado vacío `Todavía no hay niños` con el CTA de alta.
-- [ ] Con cero niños no aparece ningún encabezado de sala ni contador.
-- [ ] El CTA del estado vacío abre la misma modal de "Agregar niño".
-- [ ] La modal muestra una opción por cada sala de la guardería del usuario (Soles, Lunas, Estrellas) y arranca sin selección.
-- [ ] Con los tres obligatorios vacíos se muestran los errores y no se llama al Server Action.
-- [ ] Una fecha futura sigue mostrando `La fecha no puede ser futura`.
-- [ ] Un nombre solo con espacios se rechaza en cliente y en servidor.
-- [ ] Con datos válidos, el botón muestra `Guardando…`, se deshabilita y la modal se cierra al terminar.
-- [ ] Tras el alta, el niño aparece en `/kids` sin recargar la página.
-- [ ] El niño creado en Soles aparece bajo `SALA SOLES` y el contador del grupo suma uno.
-- [ ] Un niño creado en Lunas aparece bajo `SALA LUNAS`, no bajo Soles.
-- [ ] Los grupos se ordenan Soles, Lunas, Estrellas y solo se muestran si tienen niños.
-- [ ] El buscador filtra por nombre dentro de todos los grupos.
-- [ ] Recargar `/kids` conserva los niños creados.
-- [ ] El nombre con tildes genera un slug sin tildes y en minúsculas (ej. `Sofía Méndez` → `sofia-mendez`).
-- [ ] Un segundo niño con el mismo nombre genera `sofia-mendez-2` dentro de la misma guardería.
-- [ ] Un nombre sin caracteres alfanuméricos genera un slug `child-<hex>`.
-- [ ] El perfil `/kids/<slug>` abre con el nombre, la edad, la sala y el ingreso del niño real.
-- [ ] La fecha de nacimiento se muestra como `12 mar 2022` y el ingreso como `feb 2025`.
-- [ ] Un niño menor a un año muestra la edad en meses (ej. `8 meses`).
-- [ ] Un niño con `peanut` muestra el chip `MANÍ`; uno sin alergias muestra el chevron.
-- [ ] `Maní, Lactosa` se guarda como `{peanut,lactose}` y se muestran dos chips.
-- [ ] Un término no reconocido (ej. `polen`) no aparece como chip y se conserva en `medical_notes` con el prefijo `Alergias: `.
-- [ ] Las notas médicas escritas en el formulario se guardan en `medical_notes` y se muestran en el perfil.
-- [ ] Un niño recién creado tiene `enrolled_at` igual a la fecha de hoy, `status = 'active'` y `photo_consent = true`.
-- [ ] Un `INSERT` con una sala de otra guardería se rechaza y la modal muestra `No pudimos guardar el niño. Intentá de nuevo.`.
-- [ ] Un slug inexistente en `/kids/<slug>` devuelve 404.
-- [ ] Las tarjetas muestran `sin padres vinculados` mientras `parent_children` no exista.
-- [ ] El feed muestra el conteo real de niños activos en lugar de `12 niños`; `dateLabel` sigue siendo `martes 17 jun`.
-- [ ] `lib/data.ts` ya no exporta el arreglo `children` y ningún archivo lo importa.
-- [ ] No queda ninguna referencia a la constante `ROOMS` en `AddChildForm`.
-- [ ] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
-- [ ] Playwright verifica el flujo completo a 1440×900 y 390×844 sin desbordamiento horizontal.
-- [ ] La verificación visual de `/kids` y `/kids/<slug>` mantiene estructura, colores, tipografías y espaciados de SPEC 02, salvo la agrupación por sala y el estado vacío.
-- [ ] Las filas creadas durante la verificación se eliminan con SQL del MCP y `public.children` queda como estaba antes de la prueba.
+- [x] `/kids` carga sin errores en consola y sin niños muestra el estado vacío `Todavía no hay niños` con el CTA de alta.
+- [x] Con cero niños no aparece ningún encabezado de sala ni contador.
+- [x] El CTA del estado vacío abre la misma modal de "Agregar niño".
+- [x] La modal muestra una opción por cada sala de la guardería del usuario (Soles, Lunas, Estrellas) y arranca sin selección.
+- [x] Con los tres obligatorios vacíos se muestran los errores y no se llama al Server Action.
+- [x] Una fecha futura sigue mostrando `La fecha no puede ser futura`.
+- [x] Un nombre solo con espacios se rechaza en cliente y en servidor.
+- [x] Con datos válidos, el botón muestra `Guardando…`, se deshabilita y la modal se cierra al terminar.
+- [x] Tras el alta, el niño aparece en `/kids` sin recargar la página.
+- [x] El niño creado en Soles aparece bajo `SALA SOLES` y el contador del grupo suma uno.
+- [x] Un niño creado en Lunas aparece bajo `SALA LUNAS`, no bajo Soles.
+- [x] Los grupos se ordenan Soles, Lunas, Estrellas y solo se muestran si tienen niños.
+- [x] El buscador filtra por nombre dentro de todos los grupos.
+- [x] Recargar `/kids` conserva los niños creados.
+- [x] El nombre con tildes genera un slug sin tildes y en minúsculas (ej. `Sofía Méndez` → `sofia-mendez`).
+- [x] Un segundo niño con el mismo nombre genera `sofia-mendez-2` dentro de la misma guardería.
+- [x] Un nombre sin caracteres alfanuméricos genera un slug `child-<hex>`.
+- [x] El perfil `/kids/<slug>` abre con el nombre, la edad, la sala y el ingreso del niño real.
+- [x] La fecha de nacimiento se muestra como `12 mar 2022` y el ingreso como `feb 2025`.
+- [x] Un niño menor a un año muestra la edad en meses (ej. `8 meses`).
+- [x] Un niño con `peanut` muestra el chip `MANÍ`; uno sin alergias muestra el chevron.
+- [x] `Maní, Lactosa` se guarda como `{peanut,lactose}` y se muestran dos chips.
+- [x] Un término no reconocido (ej. `polen`) no aparece como chip y se conserva en `medical_notes` con el prefijo `Alergias: `.
+- [x] Las notas médicas escritas en el formulario se guardan en `medical_notes` y se muestran en el perfil.
+- [x] Un niño recién creado tiene `enrolled_at` igual a la fecha de hoy, `status = 'active'` y `photo_consent = true`.
+- [x] Un `INSERT` con una sala de otra guardería se rechaza y la modal muestra `No pudimos guardar el niño. Intentá de nuevo.`.
+- [x] Un slug inexistente en `/kids/<slug>` devuelve 404.
+- [x] Las tarjetas muestran `sin padres vinculados` mientras `parent_children` no exista.
+- [x] El feed muestra el conteo real de niños activos en lugar de `12 niños`; `dateLabel` sigue siendo `martes 17 jun`.
+- [x] `lib/data.ts` ya no exporta el arreglo `children` y ningún archivo lo importa.
+- [x] No queda ninguna referencia a la constante `ROOMS` en `AddChildForm`.
+- [x] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
+- [x] Playwright verifica el flujo completo a 1440×900 y 390×844 sin desbordamiento horizontal.
+- [x] La verificación visual de `/kids` y `/kids/<slug>` mantiene estructura, colores, tipografías y espaciados de SPEC 02, salvo la agrupación por sala y el estado vacío.
+- [x] Las filas creadas durante la verificación se eliminan con SQL del MCP y `public.children` queda como estaba antes de la prueba.
 
 ## Decisiones tomadas y descartadas
 

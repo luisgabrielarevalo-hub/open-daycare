@@ -9,7 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
-import { children, type PostKind } from "@/lib/data";
+import { postRecipients, type PostKind } from "@/lib/data";
 
 const MAX_PHOTOS = 4;
 const MAX_DESCRIPTION_LENGTH = 1000;
@@ -21,7 +21,7 @@ const RECIPIENT_IDS = [
 ] as const;
 
 const recipients = RECIPIENT_IDS.flatMap((id) => {
-  const child = children.find((item) => item.id === id);
+  const child = postRecipients.find((item) => item.id === id);
   return child ? [{ ...child, id }] : [];
 });
 

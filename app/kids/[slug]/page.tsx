@@ -5,16 +5,27 @@ import { AllergyNote } from "@/components/kids/AllergyNote";
 import { LinkedParentsCard } from "@/components/kids/LinkedParentsCard";
 import { ChevronLeftIcon, SunIcon } from "@/components/ui/icons";
 import { requireProfile } from "@/lib/auth/profile";
-import { children } from "@/lib/data";
+import { toChildView, type ChildRow } from "@/lib/kids/children";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">) {
-  const [{ slug }, profile] = await Promise.all([
+  const [{ slug }, profile, supabase] = await Promise.all([
     props.params,
     requireProfile(),
+    createClient(),
   ]);
-  const child = children.find((item) => item.id === slug);
 
-  if (!child) notFound();
+  const { data: row } = await supabase
+    .from("children")
+    .select(
+      "id, slug, full_name, birth_date, enrolled_at, medical_notes, allergy_tags, status, rooms(name)",
+    )
+    .eq("slug", slug)
+    .maybeSingle<ChildRow>();
+
+  if (!row) notFound();
+
+  const child = toChildView(row);
 
   const details = [
     { label: "Fecha de nacimiento", value: child.birthDateLabel },
