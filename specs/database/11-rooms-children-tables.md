@@ -1,6 +1,6 @@
 # SPEC 11 — Supabase: tablas `rooms` y `children`
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 07 (tabla `public.daycares`), SPEC 08 (tabla `public.users` y usuario demo), SPEC 10 (políticas RLS del perfil)
 > **Fecha:** 2026-10-28
 > **Objetivo:** Crear `public.rooms`, `public.children` y el enum `child_status` con RLS de lectura y alta, y sembrar las salas Soles, Lunas y Estrellas, sin conectar la aplicación.
@@ -267,44 +267,44 @@ where d.name = 'Guardería Sala Soles'
 
 ## Criterios de aceptación
 
-- [ ] `public.child_status` existe con exactamente los valores `active` y `archived`, en ese orden.
-- [ ] `public.rooms` existe con exactamente cuatro columnas: `id`, `daycare_id`, `name` y `created_at`.
-- [ ] `rooms.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
-- [ ] `rooms.daycare_id` es `uuid NOT NULL` con FK a `public.daycares(id)` y `ON DELETE RESTRICT`.
-- [ ] `rooms.name` es `text NOT NULL` y existe `UNIQUE (daycare_id, name)`.
-- [ ] Existe `UNIQUE (id, daycare_id)` en `public.rooms`.
-- [ ] Existe el índice `rooms_daycare_id_idx` sobre `public.rooms(daycare_id)`.
-- [ ] `public.children` existe con exactamente trece columnas: `id`, `room_id`, `daycare_id`, `slug`, `full_name`, `birth_date`, `enrolled_at`, `medical_notes`, `allergy_tags`, `photo_consent`, `status`, `created_at` y `updated_at`.
-- [ ] `children.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
-- [ ] `children.room_id` y `children.daycare_id` son `uuid NOT NULL`.
-- [ ] Existe la FK compuesta `(room_id, daycare_id)` a `rooms(id, daycare_id)` con `ON DELETE RESTRICT`.
-- [ ] `children.daycare_id` tiene FK a `public.daycares(id)` con `ON DELETE RESTRICT`.
-- [ ] `children.slug` es `text NOT NULL`, con `UNIQUE (daycare_id, slug)` y `CHECK` de formato kebab-case.
-- [ ] `children.full_name` es `text NOT NULL` y `birth_date` es `date NOT NULL`.
-- [ ] `enrolled_at` es `date NOT NULL` con default `current_date`.
-- [ ] `medical_notes` es `text` nullable.
-- [ ] `allergy_tags` es `text[] NOT NULL` con default `'{}'`.
-- [ ] `photo_consent` es `boolean NOT NULL` con default `true`.
-- [ ] `status` es `public.child_status NOT NULL` con default `'active'`.
-- [ ] `created_at` y `updated_at` son `timestamptz NOT NULL` con default `now()`.
-- [ ] Existen los índices `children_daycare_id_idx` y `children_room_id_idx`.
-- [ ] RLS está activo en `public.rooms` y en `public.children`.
-- [ ] `pg_policies` muestra exactamente `rooms_select_same_daycare` (`SELECT`), `children_select_same_daycare` (`SELECT`) y `children_insert_staff` (`INSERT`), todas para `authenticated`.
-- [ ] No hay políticas de `UPDATE` ni `DELETE` en ninguna de las dos tablas.
-- [ ] Las migraciones no contienen `GRANT` ni `REVOKE`.
-- [ ] `anon` obtiene `0` filas de `public.rooms` y `0` de `public.children`.
-- [ ] El usuario demo ve las tres salas de Sala Soles y ningún niño.
-- [ ] El usuario demo puede insertar un niño en una sala de su guardería y el `rollback` no deja filas.
-- [ ] Un UUID distinto obtiene `0` salas, `0` niños y no puede insertar.
-- [ ] La guardería Sala Soles tiene exactamente tres salas: Soles, Lunas y Estrellas.
-- [ ] Reejecutar el seed de salas deja exactamente tres filas.
-- [ ] `public.children` queda con cero filas.
-- [ ] `public.users` sigue con una fila y `public.daycares` con cuatro.
-- [ ] `list_migrations` muestra las cinco migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
-- [ ] `get_advisors` no reporta errores (`ERROR`) nuevos; los avisos informativos y los WARN de `public.rls_auto_enable()` se aceptan.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
-- [ ] `app/`, `components/` y `lib/` no cambiaron.
+- [x] `public.child_status` existe con exactamente los valores `active` y `archived`, en ese orden.
+- [x] `public.rooms` existe con exactamente cuatro columnas: `id`, `daycare_id`, `name` y `created_at`.
+- [x] `rooms.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
+- [x] `rooms.daycare_id` es `uuid NOT NULL` con FK a `public.daycares(id)` y `ON DELETE RESTRICT`.
+- [x] `rooms.name` es `text NOT NULL` y existe `UNIQUE (daycare_id, name)`.
+- [x] Existe `UNIQUE (id, daycare_id)` en `public.rooms`.
+- [x] Existe el índice `rooms_daycare_id_idx` sobre `public.rooms(daycare_id)`.
+- [x] `public.children` existe con exactamente trece columnas: `id`, `room_id`, `daycare_id`, `slug`, `full_name`, `birth_date`, `enrolled_at`, `medical_notes`, `allergy_tags`, `photo_consent`, `status`, `created_at` y `updated_at`.
+- [x] `children.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
+- [x] `children.room_id` y `children.daycare_id` son `uuid NOT NULL`.
+- [x] Existe la FK compuesta `(room_id, daycare_id)` a `rooms(id, daycare_id)` con `ON DELETE RESTRICT`.
+- [x] `children.daycare_id` tiene FK a `public.daycares(id)` con `ON DELETE RESTRICT`.
+- [x] `children.slug` es `text NOT NULL`, con `UNIQUE (daycare_id, slug)` y `CHECK` de formato kebab-case.
+- [x] `children.full_name` es `text NOT NULL` y `birth_date` es `date NOT NULL`.
+- [x] `enrolled_at` es `date NOT NULL` con default `current_date`.
+- [x] `medical_notes` es `text` nullable.
+- [x] `allergy_tags` es `text[] NOT NULL` con default `'{}'`.
+- [x] `photo_consent` es `boolean NOT NULL` con default `true`.
+- [x] `status` es `public.child_status NOT NULL` con default `'active'`.
+- [x] `created_at` y `updated_at` son `timestamptz NOT NULL` con default `now()`.
+- [x] Existen los índices `children_daycare_id_idx` y `children_room_id_idx`.
+- [x] RLS está activo en `public.rooms` y en `public.children`.
+- [x] `pg_policies` muestra exactamente `rooms_select_same_daycare` (`SELECT`), `children_select_same_daycare` (`SELECT`) y `children_insert_staff` (`INSERT`), todas para `authenticated`.
+- [x] No hay políticas de `UPDATE` ni `DELETE` en ninguna de las dos tablas.
+- [x] Las migraciones no contienen `GRANT` ni `REVOKE`.
+- [x] `anon` obtiene `0` filas de `public.rooms` y `0` de `public.children`.
+- [x] El usuario demo ve las tres salas de Sala Soles y ningún niño.
+- [x] El usuario demo puede insertar un niño en una sala de su guardería y el `rollback` no deja filas.
+- [x] Un UUID distinto obtiene `0` salas, `0` niños y no puede insertar.
+- [x] La guardería Sala Soles tiene exactamente tres salas: Soles, Lunas y Estrellas.
+- [x] Reejecutar el seed de salas deja exactamente tres filas.
+- [x] `public.children` queda con cero filas.
+- [x] `public.users` sigue con una fila y `public.daycares` con cuatro.
+- [x] `list_migrations` muestra las cinco migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
+- [x] `get_advisors` no reporta errores (`ERROR`) nuevos; los avisos informativos y los WARN de `public.rls_auto_enable()` se aceptan.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
+- [x] `app/`, `components/` y `lib/` no cambiaron.
 
 ## Decisiones tomadas y descartadas
 
