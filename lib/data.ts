@@ -35,10 +35,7 @@ export type StaffProfile = {
   dateLabel: string;
 };
 
-export const feedSummary = {
-  childCount: 12,
-  dateLabel: "martes 17 jun",
-} as const;
+export const feedDateLabel = "martes 17 jun";
 
 export type ChildTagTone = "allergy" | "link";
 
@@ -75,7 +72,7 @@ export type Child = {
   parents: LinkedParent[];
 };
 
-export const children: Child[] = [
+export const postRecipients: Child[] = [
   {
     id: "mateo-fernandez",
     fullName: "Mateo Fernández",
@@ -156,110 +153,6 @@ export const children: Child[] = [
         name: "Paula Ruiz",
         relationship: "Mamá",
         initial: "P",
-        avatarBg: "#F4DC8E",
-        avatarColor: "#9A7B1E",
-        status: "active",
-        statusLabel: "activa",
-      },
-    ],
-  },
-  {
-    id: "valentina-soto",
-    fullName: "Valentina Soto",
-    ageLabel: "2 años",
-    room: "Soles",
-    roomFullName: "Sala Soles",
-    birthDateLabel: "4 abr 2023",
-    joinedLabel: "feb 2025",
-    avatarBg: "#F4DC8E",
-    avatarColor: "#9A7B1E",
-    tag: { label: "VINCULAR", tone: "link" },
-    parents: [],
-  },
-  {
-    id: "tomas-diaz",
-    fullName: "Tomás Díaz",
-    ageLabel: "3 años",
-    room: "Soles",
-    roomFullName: "Sala Soles",
-    birthDateLabel: "17 jun 2022",
-    joinedLabel: "feb 2025",
-    avatarBg: "#C9B6E8",
-    avatarColor: "#7B5FC0",
-    tag: { label: "LACTOSA", tone: "allergy" },
-    allergiesNotes:
-      "Intolerancia a la lactosa. Usar leche sin lactosa en las comidas.",
-    parents: [
-      {
-        name: "Mariana Díaz",
-        relationship: "Mamá",
-        initial: "M",
-        avatarBg: "#F4B8CC",
-        avatarColor: "#C44A7A",
-        status: "active",
-        statusLabel: "activa",
-      },
-    ],
-  },
-  {
-    id: "emma-castro",
-    fullName: "Emma Castro",
-    ageLabel: "2 años",
-    room: "Soles",
-    roomFullName: "Sala Soles",
-    birthDateLabel: "29 sep 2023",
-    joinedLabel: "mar 2025",
-    avatarBg: "#F4B8CC",
-    avatarColor: "#C44A7A",
-    parents: [
-      {
-        name: "Pablo Castro",
-        relationship: "Papá",
-        initial: "P",
-        avatarBg: "#B9DEC4",
-        avatarColor: "#FFFFFF",
-        status: "active",
-        statusLabel: "activo",
-      },
-    ],
-  },
-  {
-    id: "lucas-romero",
-    fullName: "Lucas Romero",
-    ageLabel: "3 años",
-    room: "Soles",
-    roomFullName: "Sala Soles",
-    birthDateLabel: "3 feb 2022",
-    joinedLabel: "ene 2025",
-    avatarBg: "#A9D9E8",
-    avatarColor: "#1F7A93",
-    parents: [
-      {
-        name: "Natalia Romero",
-        relationship: "Mamá",
-        initial: "N",
-        avatarBg: "#C9B6E8",
-        avatarColor: "#FFFFFF",
-        status: "active",
-        statusLabel: "activa",
-      },
-    ],
-  },
-  {
-    id: "olivia-vega",
-    fullName: "Olivia Vega",
-    ageLabel: "2 años",
-    room: "Soles",
-    roomFullName: "Sala Soles",
-    birthDateLabel: "15 may 2023",
-    joinedLabel: "abr 2025",
-    avatarBg: "#B9DEC4",
-    avatarColor: "#3E8B62",
-    parents: [
-      {
-        name: "Sofía Vega",
-        relationship: "Mamá",
-        initial: "S",
         avatarBg: "#F4DC8E",
         avatarColor: "#9A7B1E",
         status: "active",

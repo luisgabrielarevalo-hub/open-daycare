@@ -6,7 +6,7 @@ import {
   type PostDraft,
 } from "@/components/feed/CreatePostForm";
 import { useFeed } from "@/components/feed/FeedProvider";
-import { children, type Post } from "@/lib/data";
+import { postRecipients, type Post } from "@/lib/data";
 
 function getCurrentTimeLabel() {
   const now = new Date();
@@ -74,7 +74,7 @@ export function CreatePostModal() {
       };
     } else {
       const selectedChildren = draft.recipientIds.flatMap((id) => {
-        const child = children.find((item) => item.id === id);
+        const child = postRecipients.find((item) => item.id === id);
         return child ? [child] : [];
       });
 

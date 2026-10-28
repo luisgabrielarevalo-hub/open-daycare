@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { feedSummary, type StaffProfile } from "@/lib/data";
+import { feedDateLabel, type StaffProfile } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -24,11 +24,17 @@ export const requireProfile = cache(async (): Promise<StaffProfile> => {
     redirect("/auth/login");
   }
 
-  const { data: row } = await supabase
-    .from("users")
-    .select("full_name, role, daycares(name)")
-    .eq("id", claims.sub)
-    .maybeSingle<ProfileRow>();
+  const [{ data: row }, { count: childCount }] = await Promise.all([
+    supabase
+      .from("users")
+      .select("full_name, role, daycares(name)")
+      .eq("id", claims.sub)
+      .maybeSingle<ProfileRow>(),
+    supabase
+      .from("children")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active"),
+  ]);
 
   const metadataName = claims.user_metadata?.full_name;
   const fallbackName =
@@ -46,7 +52,7 @@ export const requireProfile = cache(async (): Promise<StaffProfile> => {
     role: ROLE_LABELS[row?.role ?? ""] ?? "Staff",
     initial: name.charAt(0).toUpperCase() || "U",
     room,
-    childCount: feedSummary.childCount,
-    dateLabel: feedSummary.dateLabel,
+    childCount: childCount ?? 0,
+    dateLabel: feedDateLabel,
   };
 });
