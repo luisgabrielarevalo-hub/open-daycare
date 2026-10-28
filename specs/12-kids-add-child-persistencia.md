@@ -1,6 +1,6 @@
 # SPEC 12 — Niños: alta persistida, listado y perfil desde Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02 (páginas `/kids` y `/kids/[slug]`), SPEC 04 (modal "Agregar niño"), SPEC 09 (auth, `requireProfile` y protección de rutas), SPEC 11 (tablas `rooms` y `children` con RLS; implementar antes)
 > **Fecha:** 2026-10-28
 > **Objetivo:** Guardar el niño del modal en `public.children`, leer `/kids` y `/kids/[slug]` desde Supabase con salas reales, agrupación por sala, estado vacío y conteo real en el feed, eliminando los niños mock.
