@@ -70,6 +70,7 @@ export type Child = {
   avatarBg: string;
   avatarColor: string;
   tag?: ChildTag;
+  tags?: ChildTag[];
   allergiesNotes?: string;
   parents: LinkedParent[];
 };
