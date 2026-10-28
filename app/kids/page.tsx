@@ -2,9 +2,28 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AddChildModal } from "@/components/kids/AddChildModal";
 import { KidsDirectory } from "@/components/kids/KidsDirectory";
 import { requireProfile } from "@/lib/auth/profile";
+import { toChildView, type ChildRow, type RoomOption } from "@/lib/kids/children";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function KidsPage() {
-  const profile = await requireProfile();
+  const [profile, supabase] = await Promise.all([
+    requireProfile(),
+    createClient(),
+  ]);
+
+  const [{ data: rooms }, { data: rows }] = await Promise.all([
+    supabase.from("rooms").select("id, name"),
+    supabase
+      .from("children")
+      .select(
+        "id, slug, full_name, birth_date, enrolled_at, medical_notes, allergy_tags, status, rooms(name)",
+      )
+      .eq("status", "active")
+      .order("full_name"),
+  ]);
+
+  const roomOptions = (rooms ?? []) as RoomOption[];
+  const children = ((rows ?? []) as unknown as ChildRow[]).map(toChildView);
 
   return (
     <AppShell profile={profile} activeNav="kids">
@@ -18,10 +37,10 @@ export default async function KidsPage() {
               Niños
             </h1>
           </div>
-          <AddChildModal />
+          {children.length > 0 ? <AddChildModal rooms={roomOptions} /> : null}
         </div>
 
-        <KidsDirectory />
+        <KidsDirectory rooms={roomOptions}>{children}</KidsDirectory>
       </div>
     </AppShell>
   );

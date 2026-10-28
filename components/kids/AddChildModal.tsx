@@ -3,8 +3,9 @@
 import { useRef, useState, type MouseEvent } from "react";
 import { AddChildForm } from "@/components/kids/AddChildForm";
 import { PlusIcon } from "@/components/ui/icons";
+import type { RoomOption } from "@/lib/kids/children";
 
-export function AddChildModal() {
+export function AddChildModal({ rooms }: { rooms: RoomOption[] }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [formKey, setFormKey] = useState(0);
 
@@ -47,6 +48,7 @@ export function AddChildModal() {
       >
         <AddChildForm
           key={formKey}
+          rooms={rooms}
           onCancel={closeModal}
           onSaved={closeModal}
         />
