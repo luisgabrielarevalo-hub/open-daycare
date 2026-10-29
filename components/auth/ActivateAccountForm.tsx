@@ -2,7 +2,11 @@ import Link from "next/link";
 import { AuthField } from "@/components/auth/AuthField";
 import { CheckIcon, SunIcon } from "@/components/ui/icons";
 
-export function ActivateAccountForm() {
+export function ActivateAccountForm({
+  initialCode = "",
+}: {
+  initialCode?: string;
+}) {
   return (
     <div className="w-full max-w-[440px]">
       <div className="mb-[22px] flex size-[58px] items-center justify-center rounded-[18px] bg-linear-155 from-avatar-peach-light to-avatar-peach shadow-[0_12px_26px_-10px_rgba(238,129,100,0.65)]">
@@ -37,6 +41,7 @@ export function ActivateAccountForm() {
           name="code"
           placeholder="Código de 5 caracteres"
           autoComplete="one-time-code"
+          defaultValue={initialCode}
           inputClassName="font-display text-[18px] font-bold tracking-[3px] placeholder:font-sans placeholder:text-[15px] placeholder:font-semibold placeholder:tracking-normal"
         />
       </div>
