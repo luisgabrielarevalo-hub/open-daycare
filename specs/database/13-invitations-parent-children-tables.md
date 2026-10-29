@@ -27,6 +27,8 @@
   - `children_select_staff_same_daycare`: `staff` o `admin` de la misma guardería.
   - `children_select_parent_linked`: `parent` con vínculo en `parent_children`.
 - `children_insert_staff` se mantiene sin cambios.
+- Funciones auxiliares `public.is_parent_of_child(uuid)` y `public.child_daycare_id(uuid)` (`SECURITY DEFINER`, `search_path = public`) para romper la dependencia circular entre las políticas de `children` y `parent_children`.
+- `REVOKE EXECUTE ... FROM PUBLIC` y `FROM anon`, y `GRANT EXECUTE` a `authenticated` y `service_role` sobre esas dos funciones.
 - Trigger `on_auth_user_created` `AFTER INSERT ON auth.users` con función `public.handle_new_user()` `SECURITY DEFINER` que inserta la fila en `public.users` con `daycare_id`, `role` y `full_name` leídos de `raw_user_meta_data`.
 - El trigger no inserta fila si `raw_user_meta_data.daycare_id` falta o no corresponde a una guardería: la signup falla de forma explícita en lugar de dejar un perfil huérfano.
 - Semilla de datos: ninguna. `public.invitations` y `public.parent_children` arrancan vacías.
@@ -46,7 +48,7 @@
 - `photo_consent` como columna del padre; sigue siendo del niño.
 - Tablas `posts`, `post_children`, `daily_summaries` y el resto del esquema de referencia.
 - Cambios en `public.daycares`, `public.users`, `public.rooms` o `public.children` más allá de las políticas de lectura.
-- Grants o revokes explícitos.
+- Grants o revokes explícitos sobre tablas; solo se revoca y concede `EXECUTE` sobre las dos funciones auxiliares.
 - Tests automatizados; el repo no tiene runner.
 
 ## Modelo de datos
@@ -163,9 +165,7 @@ using (
     from public.users u
     where u.id = auth.uid()
       and u.role in ('staff', 'admin')
-      and u.daycare_id = (
-        select c.daycare_id from public.children c where c.id = parent_children.child_id
-      )
+      and u.daycare_id = public.child_daycare_id(parent_children.child_id)
   )
 );
 
@@ -187,21 +187,57 @@ create policy "children_select_parent_linked"
 on public.children
 for select
 to authenticated
-using (
-  exists (
+using (public.is_parent_of_child(children.id));
+```
+
+### Funciones auxiliares
+
+```sql
+create or replace function public.is_parent_of_child(p_child_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
     select 1
     from public.parent_children pc
-    where pc.child_id = children.id
+    where pc.child_id = p_child_id
       and pc.parent_id = auth.uid()
-  )
-);
+  );
+$$;
+
+create or replace function public.child_daycare_id(p_child_id uuid)
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select c.daycare_id
+  from public.children c
+  where c.id = p_child_id;
+$$;
+
+revoke execute on function public.is_parent_of_child(uuid) from public;
+revoke execute on function public.child_daycare_id(uuid) from public;
+revoke execute on function public.is_parent_of_child(uuid) from anon;
+revoke execute on function public.child_daycare_id(uuid) from anon;
+grant execute on function public.is_parent_of_child(uuid) to authenticated, service_role;
+grant execute on function public.child_daycare_id(uuid) to authenticated, service_role;
 ```
+
+- Las dos políticas de lectura se referencian mutuamente: `children_select_parent_linked` consulta `parent_children` y `parent_children_select_own_or_staff` consulta `children`. Postgres detecta ese ciclo al ejecutar la consulta y responde `42P17: infinite recursion detected in policy`, por lo que ninguna de las dos tablas es legible.
+- Las funciones auxiliares rompen el ciclo: al ejecutarse como `SECURITY DEFINER` consultan la tabla destino sin disparar sus políticas, así que la evaluación no vuelve a entrar en el ciclo.
+- `is_parent_of_child` usa `auth.uid()` internamente: solo responde por los vínculos del usuario que consulta, no por los de terceros.
+- `REVOKE EXECUTE ... FROM PUBLIC` y `FROM anon` evita que un visitante sin sesión las invoque: Supabase concede `EXECUTE` a `anon` por default privileges, así que revocar solo de `PUBLIC` no basta. `GRANT EXECUTE` a `authenticated` y `service_role` cubre los dos usos previstos.
 
 - `invitations` no es legible por los padres: el email y el nombre de otros tutores no se exponen.
 - No hay política de `INSERT` en `parent_children`: el vínculo se crea desde el servidor con service role, para que un padre no se auto-vincule a un niño cualquiera.
 - No hay política de `UPDATE` ni `DELETE` en `invitations` ni en `parent_children`.
 - `children_insert_staff` de SPEC 11 no cambia.
-- La política `children_select_parent_linked` referencia `parent_children`, que a su vez referencia `children`: Postgres resuelve la referencia en tiempo de ejecución, no hay problema de orden de creación.
+- La política `children_select_parent_linked` y la `parent_children_select_own_or_staff` se referencian entre sí. Resolverlo con subconsultas directas provoca `42P17: infinite recursion detected in policy`; por eso ambas consultan las funciones auxiliares `public.is_parent_of_child` y `public.child_daycare_id`.
 
 ### Trigger de alta de `public.users`
 
@@ -261,14 +297,16 @@ for each row execute function public.handle_new_user();
 4. Aplicar `add_invitations_parent_children_policies`: tres políticas (`invitations_select_staff_same_daycare`, `invitations_insert_staff`, `parent_children_select_own_or_staff`). Verificar con `pg_policies` el `cmd`, los `roles`, el `qual` y el `with_check`. Guardar `supabase/migrations/<version>_add_invitations_parent_children_policies.sql`.
 5. Aplicar `split_children_select_policies`: eliminar `children_select_same_daycare` y crear `children_select_staff_same_daycare` y `children_select_parent_linked`. Verificar con `pg_policies` que no queda la política anterior. Guardar `supabase/migrations/<version>_split_children_select_policies.sql`.
 6. Aplicar `create_users_trigger`: función `public.handle_new_user()` y trigger `on_auth_user_created`. Verificar con `pg_trigger` y con un alta de prueba dentro de una transacción con `rollback`. Guardar `supabase/migrations/<version>_create_users_trigger.sql`.
-7. Verificar RLS dentro de transacciones:
+7. Aplicar `fix_children_parent_children_policy_recursion`: crear `public.is_parent_of_child(uuid)` y `public.child_daycare_id(uuid)` (`SECURITY DEFINER`, `search_path = public`), revocar `EXECUTE` a `PUBLIC` y reescribir `children_select_parent_linked` y `parent_children_select_own_or_staff` para usar las funciones. Verificar que `select` sobre `children` y `parent_children` ya no falla con `42P17`. Guardar `supabase/migrations/<version>_fix_children_parent_children_policy_recursion.sql`.
+8. Aplicar `revoke_anon_execute_helper_functions`: revocar `EXECUTE` a `anon` sobre las dos funciones (Supabase lo concede por default privileges) y concederlo a `authenticated` y `service_role`. Verificar el ACL en `pg_proc`. Guardar `supabase/migrations/<version>_revoke_anon_execute_helper_functions.sql`.
+9. Verificar RLS dentro de transacciones:
    - El usuario demo (staff) ve tres salas, sus invitaciones y los niños de la guardería.
    - Un padre con un vínculo ve solo ese niño y su propio vínculo; no ve invitaciones ni los niños de otros.
    - Un padre sin vínculos ve cero niños.
    - `anon` obtiene cero filas en las tres tablas.
    - Un padre no puede insertar en `parent_children` ni en `invitations`.
-8. Verificar que un alta en `auth.users` con `raw_user_meta_data = {daycare_id, role: 'parent', full_name}` crea la fila en `public.users` con esos valores, dentro de una transacción con `rollback`.
-9. Ejecutar `get_advisors` de seguridad y performance, `list_migrations`, `npx tsc --noEmit`, `npm run lint` y `git diff --stat`. Confirmar que solo cambiaron `supabase/migrations/` y esta spec.
+10. Verificar que un alta en `auth.users` con `raw_user_meta_data = {daycare_id, role: 'parent', full_name}` crea la fila en `public.users` con esos valores, dentro de una transacción con `rollback`.
+11. Ejecutar `get_advisors` de seguridad y performance, `list_migrations`, `npx tsc --noEmit`, `npm run lint` y `git diff --stat`. Confirmar que solo cambiaron `supabase/migrations/` y esta spec.
 
 ## Criterios de aceptación
 
@@ -303,7 +341,10 @@ for each row execute function public.handle_new_user();
 - [ ] La transacción de prueba del trigger se revierte y `public.users` sigue con una fila.
 - [ ] `public.invitations` y `public.parent_children` quedan con cero filas.
 - [ ] `public.children` sigue con las filas que hubiera antes de esta spec.
-- [ ] `list_migrations` muestra las seis migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
+- [ ] Existen las funciones `public.is_parent_of_child(uuid)` y `public.child_daycare_id(uuid)` con `SECURITY DEFINER` y `search_path = public`.
+- [ ] `EXECUTE` sobre esas dos funciones está revocado para `PUBLIC` y para `anon`, y concedido a `authenticated` y `service_role`.
+- [ ] `select` sobre `public.children` y `public.parent_children` no falla con `42P17: infinite recursion detected in policy`.
+- [ ] `list_migrations` muestra las ocho migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
 - [ ] `get_advisors` no reporta errores (`ERROR`) nuevos.
 - [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 - [ ] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
@@ -330,7 +371,9 @@ for each row execute function public.handle_new_user();
 - **No:** marcaje automático de `expired`. Requiere un job; el servidor valida `expires_at` al activar.
 - **No:** `updated_at` con trigger. No hay edición de invitaciones.
 - **No:** política de lectura de `public.users` ampliada al staff. La tarjeta de padres lee el nombre desde `invitations`.
-- **No:** grants o revokes explícitos. Se conservan los defaults de Supabase.
+- **Sí:** funciones auxiliares `is_parent_of_child` y `child_daycare_id` (`SECURITY DEFINER`) para romper el ciclo entre las políticas de `children` y `parent_children`. Sin ellas, Postgres responde `42P17` y ninguna de las dos tablas es legible.
+- **Sí:** `REVOKE EXECUTE ... FROM PUBLIC` y `FROM anon`, y `GRANT EXECUTE` a `authenticated` y `service_role` sobre esas dos funciones. Supabase concede `EXECUTE` a `anon` por default privileges, así que revocar solo de `PUBLIC` no lo excluye.
+- **No:** grants o revokes explícitos sobre tablas. Se conservan los defaults de Supabase.
 - **No:** cambios en `daycares`, `rooms` o la estructura de `children`. Solo se ajustan sus políticas de lectura.
 - **No:** rollback de migraciones, CLI de Supabase o stack local.
 - **No:** tests automatizados. El repo no tiene runner.
@@ -339,7 +382,7 @@ for each row execute function public.handle_new_user();
 
 | Riesgo | Mitigación |
 | --- | --- |
-| La política `children_select_parent_linked` referencia `parent_children` y genera dependencia circular | Postgres evalúa las políticas en tiempo de ejecución; verificar con `set local role` antes de cerrar la spec |
+| La política `children_select_parent_linked` referencia `parent_children` y genera dependencia circular | Confirmado en la base: Postgres responde `42P17: infinite recursion detected in policy` al consultar `children` o `parent_children`. Resuelto con las funciones auxiliares `is_parent_of_child` y `child_daycare_id`; verificar con `set local role` antes de cerrar la spec |
 | Un padre queda sin fila en `public.users` si el trigger falla | La excepción del trigger hace fallar la signup completa; no hay usuarios a medias |
 | Reejecutar el seed de demo con el trigger activo duplica la fila de `public.users` | El trigger usa `on conflict (id) do nothing`; documentar que `seed_demo_user` es de una sola ejecución |
 | `invited_by` con `ON DELETE RESTRICT` bloquea el borrado de un staff | Es intencional: no se borra un usuario con invitaciones emitidas; se documenta para la futura spec de baja |
