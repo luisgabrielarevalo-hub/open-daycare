@@ -1,6 +1,6 @@
 # SPEC 13 — Supabase: tablas `invitations` y `parent_children`
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 07 (tabla `public.daycares`), SPEC 08 (tabla `public.users` y enums `user_role`/`user_status`), SPEC 10 (políticas RLS del perfil), SPEC 11 (tablas `rooms` y `children`; implementar antes)
 > **Fecha:** 2026-10-29
 > **Objetivo:** Crear `public.invitations`, `public.parent_children` y los enums `relationship_type` e `invitation_status` con RLS por rol y el trigger de alta de `public.users`, para que el staff invite a un padre y el vínculo quede persistido.
@@ -310,45 +310,45 @@ for each row execute function public.handle_new_user();
 
 ## Criterios de aceptación
 
-- [ ] `public.relationship_type` existe con exactamente los valores `father`, `mother` y `guardian`, en ese orden.
-- [ ] `public.invitation_status` existe con exactamente los valores `pending`, `accepted`, `expired` y `cancelled`, en ese orden.
-- [ ] `public.invitations` existe con exactamente trece columnas: `id`, `child_id`, `daycare_id`, `invited_by`, `full_name`, `email`, `relationship`, `code`, `status`, `expires_at`, `accepted_at`, `created_at` y `updated_at`.
-- [ ] `invitations.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
-- [ ] `invitations.child_id` tiene FK a `public.children(id)` con `ON DELETE CASCADE`.
-- [ ] `invitations.daycare_id` tiene FK a `public.daycares(id)` con `ON DELETE RESTRICT`.
-- [ ] `invitations.invited_by` tiene FK a `public.users(id)` con `ON DELETE RESTRICT`.
-- [ ] `invitations.full_name`, `invitations.email` y `invitations.relationship` son `NOT NULL`.
-- [ ] `invitations.code` es `text NOT NULL` con `UNIQUE` y `CHECK` de formato `^[A-Z0-9]{5}$`.
-- [ ] `invitations.status` es `public.invitation_status NOT NULL` con default `'pending'`.
-- [ ] `invitations.expires_at` es `timestamptz NOT NULL` y `invitations.accepted_at` es nullable.
-- [ ] Existen los índices `invitations_child_id_idx`, `invitations_daycare_id_idx` y `invitations_email_idx`.
-- [ ] `public.parent_children` existe con exactamente cinco columnas: `id`, `parent_id`, `child_id`, `relationship` y `created_at`.
-- [ ] `parent_children.parent_id` y `parent_children.child_id` son `uuid NOT NULL` con FK y `ON DELETE CASCADE`.
-- [ ] Existe `UNIQUE (parent_id, child_id)` en `public.parent_children`.
-- [ ] Existen los índices `parent_children_parent_id_idx` y `parent_children_child_id_idx`.
-- [ ] RLS está activo en `public.invitations` y en `public.parent_children`.
-- [ ] `pg_policies` muestra `invitations_select_staff_same_daycare` (`SELECT`), `invitations_insert_staff` (`INSERT`), `parent_children_select_own_or_staff` (`SELECT`), `children_select_staff_same_daycare` (`SELECT`) y `children_select_parent_linked` (`SELECT`), todas para `authenticated`.
-- [ ] `children_select_same_daycare` ya no existe en `pg_policies`.
-- [ ] No hay políticas de `UPDATE` ni de `DELETE` en `invitations` ni en `parent_children`.
-- [ ] No hay política de `INSERT` en `parent_children`.
-- [ ] `anon` obtiene cero filas en `public.invitations`, `public.parent_children` y `public.children`.
-- [ ] El usuario demo ve las tres salas y todos los niños de su guardería.
-- [ ] Un padre con un vínculo ve exactamente un niño y un vínculo; no ve invitaciones.
-- [ ] Un padre sin vínculos ve cero niños.
-- [ ] Un padre no puede insertar en `parent_children` ni en `invitations`.
-- [ ] Un alta en `auth.users` con `raw_user_meta_data` con `daycare_id`, `role: 'parent'` y `full_name` crea una fila en `public.users` con `role = 'parent'`, `status = 'active'` y ese `full_name`.
-- [ ] Un alta en `auth.users` sin `daycare_id` válido falla con excepción y no deja fila en `public.users`.
-- [ ] La transacción de prueba del trigger se revierte y `public.users` sigue con una fila.
-- [ ] `public.invitations` y `public.parent_children` quedan con cero filas.
-- [ ] `public.children` sigue con las filas que hubiera antes de esta spec.
-- [ ] Existen las funciones `public.is_parent_of_child(uuid)` y `public.child_daycare_id(uuid)` con `SECURITY DEFINER` y `search_path = public`.
-- [ ] `EXECUTE` sobre esas dos funciones está revocado para `PUBLIC` y para `anon`, y concedido a `authenticated` y `service_role`.
-- [ ] `select` sobre `public.children` y `public.parent_children` no falla con `42P17: infinite recursion detected in policy`.
-- [ ] `list_migrations` muestra las ocho migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
-- [ ] `get_advisors` no reporta errores (`ERROR`) nuevos.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
-- [ ] `app/`, `components/` y `lib/` no cambiaron.
+- [x] `public.relationship_type` existe con exactamente los valores `father`, `mother` y `guardian`, en ese orden.
+- [x] `public.invitation_status` existe con exactamente los valores `pending`, `accepted`, `expired` y `cancelled`, en ese orden.
+- [x] `public.invitations` existe con exactamente trece columnas: `id`, `child_id`, `daycare_id`, `invited_by`, `full_name`, `email`, `relationship`, `code`, `status`, `expires_at`, `accepted_at`, `created_at` y `updated_at`.
+- [x] `invitations.id` es `uuid PRIMARY KEY` con default `gen_random_uuid()`.
+- [x] `invitations.child_id` tiene FK a `public.children(id)` con `ON DELETE CASCADE`.
+- [x] `invitations.daycare_id` tiene FK a `public.daycares(id)` con `ON DELETE RESTRICT`.
+- [x] `invitations.invited_by` tiene FK a `public.users(id)` con `ON DELETE RESTRICT`.
+- [x] `invitations.full_name`, `invitations.email` y `invitations.relationship` son `NOT NULL`.
+- [x] `invitations.code` es `text NOT NULL` con `UNIQUE` y `CHECK` de formato `^[A-Z0-9]{5}$`.
+- [x] `invitations.status` es `public.invitation_status NOT NULL` con default `'pending'`.
+- [x] `invitations.expires_at` es `timestamptz NOT NULL` y `invitations.accepted_at` es nullable.
+- [x] Existen los índices `invitations_child_id_idx`, `invitations_daycare_id_idx` y `invitations_email_idx`.
+- [x] `public.parent_children` existe con exactamente cinco columnas: `id`, `parent_id`, `child_id`, `relationship` y `created_at`.
+- [x] `parent_children.parent_id` y `parent_children.child_id` son `uuid NOT NULL` con FK y `ON DELETE CASCADE`.
+- [x] Existe `UNIQUE (parent_id, child_id)` en `public.parent_children`.
+- [x] Existen los índices `parent_children_parent_id_idx` y `parent_children_child_id_idx`.
+- [x] RLS está activo en `public.invitations` y en `public.parent_children`.
+- [x] `pg_policies` muestra `invitations_select_staff_same_daycare` (`SELECT`), `invitations_insert_staff` (`INSERT`), `parent_children_select_own_or_staff` (`SELECT`), `children_select_staff_same_daycare` (`SELECT`) y `children_select_parent_linked` (`SELECT`), todas para `authenticated`.
+- [x] `children_select_same_daycare` ya no existe en `pg_policies`.
+- [x] No hay políticas de `UPDATE` ni de `DELETE` en `invitations` ni en `parent_children`.
+- [x] No hay política de `INSERT` en `parent_children`.
+- [x] `anon` obtiene cero filas en `public.invitations`, `public.parent_children` y `public.children`.
+- [x] El usuario demo ve las tres salas y todos los niños de su guardería.
+- [x] Un padre con un vínculo ve exactamente un niño y un vínculo; no ve invitaciones.
+- [x] Un padre sin vínculos ve cero niños.
+- [x] Un padre no puede insertar en `parent_children` ni en `invitations`.
+- [x] Un alta en `auth.users` con `raw_user_meta_data` con `daycare_id`, `role: 'parent'` y `full_name` crea una fila en `public.users` con `role = 'parent'`, `status = 'active'` y ese `full_name`.
+- [x] Un alta en `auth.users` sin `daycare_id` válido falla con excepción y no deja fila en `public.users`.
+- [x] La transacción de prueba del trigger se revierte y `public.users` sigue con una fila.
+- [x] `public.invitations` y `public.parent_children` quedan con cero filas.
+- [x] `public.children` sigue con las filas que hubiera antes de esta spec.
+- [x] Existen las funciones `public.is_parent_of_child(uuid)` y `public.child_daycare_id(uuid)` con `SECURITY DEFINER` y `search_path = public`.
+- [x] `EXECUTE` sobre esas dos funciones está revocado para `PUBLIC` y para `anon`, y concedido a `authenticated` y `service_role`.
+- [x] `select` sobre `public.children` y `public.parent_children` no falla con `42P17: infinite recursion detected in policy`.
+- [x] `list_migrations` muestra las ocho migraciones y existe un archivo por cada una con el mismo prefijo y el SQL exacto.
+- [x] `get_advisors` no reporta errores (`ERROR`) nuevos.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `git diff --stat` solo muestra `supabase/migrations/` y esta spec.
+- [x] `app/`, `components/` y `lib/` no cambiaron.
 
 ## Decisiones tomadas y descartadas
 
