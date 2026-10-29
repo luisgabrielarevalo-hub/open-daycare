@@ -1,6 +1,6 @@
 # SPEC 14 — Vincular padre: invitación real y correo con Resend
 
-> **Estado:** Draft
+> **Estado:** Aprobado
 > **Depende de:** SPEC 05 (modal "Vincular padre"), SPEC 11 (tablas `rooms` y `children`), SPEC 12 (listado y perfil del niño desde Supabase), SPEC 13 (tablas `invitations` y `parent_children`; implementar antes)
 > **Fecha:** 2026-10-29
 > **Objetivo:** Enviar la invitación de vincular padre por correo con Resend desde el modal real, guardando la invitación en `public.invitations` y mostrando en el perfil del niño el código generado y los padres vinculados con su estado.
