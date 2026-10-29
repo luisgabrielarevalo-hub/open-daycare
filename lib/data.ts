@@ -29,6 +29,7 @@ export type Post = {
 export type StaffProfile = {
   name: string;
   role: string;
+  roleKey: "staff" | "parent" | "admin";
   initial: string;
   room: string;
   childCount: number;

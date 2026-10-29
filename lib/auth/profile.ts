@@ -9,6 +9,10 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Admin",
 };
 
+function roleKeyFromRow(role: string | null | undefined): StaffProfile["roleKey"] {
+  return role === "parent" || role === "admin" ? role : "staff";
+}
+
 type ProfileRow = {
   full_name: string | null;
   role: string | null;
@@ -50,6 +54,7 @@ export const requireProfile = cache(async (): Promise<StaffProfile> => {
   return {
     name,
     role: ROLE_LABELS[row?.role ?? ""] ?? "Staff",
+    roleKey: roleKeyFromRow(row?.role),
     initial: name.charAt(0).toUpperCase() || "U",
     room,
     childCount: childCount ?? 0,
