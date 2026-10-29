@@ -1,6 +1,6 @@
 # SPEC 15 — Activación de la cuenta del padre y vínculo con el niño
 
-> **Estado:** Draft
+> **Estado:** Aprobado
 > **Depende de:** SPEC 03 (pantalla de activación), SPEC 09 (auth, `requireProfile` y protección de rutas), SPEC 13 (tablas `invitations`, `parent_children` y trigger de alta; implementar antes), SPEC 14 (invitación y código por correo; implementar antes)
 > **Fecha:** 2026-10-29
 > **Objetivo:** Activar la invitación desde `/auth/activate` creando la cuenta del padre en Supabase Auth y su vínculo con el niño, y limitar al rol `parent` a la ruta `/` de la app.
