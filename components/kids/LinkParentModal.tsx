@@ -5,18 +5,24 @@ import { LinkParentForm } from "@/components/kids/LinkParentForm";
 import { PlusIcon } from "@/components/ui/icons";
 
 type LinkParentModalProps = {
+  childId: string;
   childFullName: string;
 };
 
-export function LinkParentModal({ childFullName }: LinkParentModalProps) {
+export function LinkParentModal({
+  childId,
+  childFullName,
+}: LinkParentModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [formKey, setFormKey] = useState(0);
+  const [sent, setSent] = useState(false);
 
   function openModal() {
     const dialog = dialogRef.current;
     if (!dialog) {
       return;
     }
+    setSent(false);
     dialog.showModal();
     dialog.querySelector<HTMLInputElement>("#parent-name")?.focus();
   }
@@ -50,15 +56,30 @@ export function LinkParentModal({ childFullName }: LinkParentModalProps) {
         ref={dialogRef}
         aria-labelledby="link-parent-title"
         onClick={handleBackdropClick}
-        onClose={() => setFormKey((key) => key + 1)}
+        onClose={() => {
+          setFormKey((key) => key + 1);
+          setSent(false);
+        }}
         className="m-auto max-h-[calc(100dvh-24px)] w-[calc(100%-32px)] max-w-[480px] overflow-y-auto rounded-[24px] border border-border bg-modal-bg p-0 text-ink shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)] backdrop:bg-scrim"
       >
         <LinkParentForm
           key={formKey}
+          childId={childId}
           childFullName={childFullName}
           onClose={closeModal}
-          onSent={closeModal}
+          onSuccess={() => setSent(true)}
         />
+        {sent && (
+          <div className="border-t border-border px-[26px] py-4 short:py-3">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="w-full cursor-pointer rounded-[14px] bg-ink py-[13px] text-[15px] font-extrabold text-white"
+            >
+              Listo
+            </button>
+          </div>
+        )}
       </dialog>
     </>
   );

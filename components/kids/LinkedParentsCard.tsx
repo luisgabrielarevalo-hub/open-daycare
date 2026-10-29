@@ -3,6 +3,7 @@ import type { LinkedParent } from "@/lib/data";
 
 type LinkedParentsCardProps = {
   parents: LinkedParent[];
+  childId: string;
   childFullName: string;
 };
 
@@ -14,6 +15,7 @@ function statusLabel(parent: LinkedParent) {
 
 export function LinkedParentsCard({
   parents,
+  childId,
   childFullName,
 }: LinkedParentsCardProps) {
   return (
@@ -52,7 +54,7 @@ export function LinkedParentsCard({
             </span>
           </div>
         ))}
-        <LinkParentModal childFullName={childFullName} />
+        <LinkParentModal childId={childId} childFullName={childFullName} />
       </div>
     </div>
   );

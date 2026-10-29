@@ -107,6 +107,7 @@ export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">)
             </a>
             <LinkedParentsCard
               parents={child.parents}
+              childId={row.id}
               childFullName={child.fullName}
             />
           </div>
