@@ -7,12 +7,15 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage(props: PageProps<"/auth/login">) {
-  const { next } = await props.searchParams;
+  const { next, activated } = await props.searchParams;
 
   return (
     <main className="grid min-h-screen bg-auth-bg lg:grid-cols-[1.05fr_1fr]">
       <LoginHero />
-      <LoginForm next={typeof next === "string" ? next : ""} />
+      <LoginForm
+        next={typeof next === "string" ? next : ""}
+        activated={activated === "1"}
+      />
     </main>
   );
 }

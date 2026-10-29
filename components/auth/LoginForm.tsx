@@ -12,7 +12,13 @@ const initialState: LoginState = {
   attempt: 0,
 };
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({
+  next,
+  activated = false,
+}: {
+  next: string;
+  activated?: boolean;
+}) {
   const [state, formAction, pending] = useActionState(
     loginAction,
     initialState,
@@ -45,6 +51,15 @@ export function LoginForm({ next }: { next: string }) {
         <p className="mb-7 text-[15px] text-muted">
           Ingresá para ver el día de hoy.
         </p>
+
+        {activated ? (
+          <p
+            role="status"
+            className="mb-[18px] rounded-[12px] bg-status-active-bg px-4 py-3 text-[13.5px] font-bold text-status-active-fg"
+          >
+            Cuenta activada. Iniciá sesión.
+          </p>
+        ) : null}
 
         <form action={formAction}>
           <input type="hidden" name="next" value={next} />
