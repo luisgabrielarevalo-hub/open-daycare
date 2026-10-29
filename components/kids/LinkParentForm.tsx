@@ -56,7 +56,8 @@ export function LinkParentForm({
 
   const childFirstName = childFullName.split(" ")[0];
   const isSuccess = state.status === "success";
-  const serverError = state.status === "error" ? state.message : null;
+  const serverError =
+    state.status === "error" && !pending ? state.message : null;
 
   useEffect(() => {
     if (isSuccess) {
