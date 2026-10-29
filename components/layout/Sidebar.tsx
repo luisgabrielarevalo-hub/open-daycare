@@ -47,6 +47,11 @@ type SidebarProps = {
 };
 
 export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
+  const isParent = profile.roleKey === "parent";
+  const visibleNavItems = isParent
+    ? navItems.filter((item) => item.key !== "kids")
+    : navItems;
+
   return (
     <aside className="flex h-full w-[248px] flex-none flex-col border-r border-border bg-paper px-4 py-6">
       <SidebarLink
@@ -68,17 +73,19 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
         </div>
       </SidebarLink>
 
-      <button
-        type="button"
-        onClick={onCompose}
-        className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
-      >
-        <PlusIcon />
-        Nueva publicación
-      </button>
+      {isParent ? null : (
+        <button
+          type="button"
+          onClick={onCompose}
+          className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
+        >
+          <PlusIcon />
+          Nueva publicación
+        </button>
+      )}
 
       <nav className="flex flex-1 flex-col gap-1">
-        {navItems.map(({ key, label, icon: NavIcon, href }) => (
+        {visibleNavItems.map(({ key, label, icon: NavIcon, href }) => (
           <SidebarLink
             key={key}
             href={href}
