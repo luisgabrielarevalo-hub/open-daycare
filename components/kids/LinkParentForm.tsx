@@ -1,18 +1,31 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useActionState, useEffect, useState, type FormEvent } from "react";
+import {
+  createParentInvitation,
+  type ParentInvitationState,
+} from "@/app/kids/actions";
 import { CloseIcon, InfoIcon, SendIcon } from "@/components/ui/icons";
 
 const RELATIONSHIPS = ["Mamá", "Papá", "Tutor/a"] as const;
 type Relationship = (typeof RELATIONSHIPS)[number];
 
-const INVITATION_CODE = "7K4P9";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CODE_PLACEHOLDER = "·····";
+
+const initialState: ParentInvitationState = {
+  status: "idle",
+  message: null,
+  code: null,
+  email: null,
+  attempt: 0,
+};
 
 type LinkParentFormProps = {
+  childId: string;
   childFullName: string;
   onClose: () => void;
-  onSent: () => void;
+  onSuccess: () => void;
 };
 
 type FieldErrors = {
@@ -27,16 +40,30 @@ const fieldClass =
 const errorClass = "mt-1.5 text-[12.5px] font-semibold text-danger";
 
 export function LinkParentForm({
+  childId,
   childFullName,
   onClose,
-  onSent,
+  onSuccess,
 }: LinkParentFormProps) {
+  const [state, formAction, pending] = useActionState(
+    createParentInvitation,
+    initialState,
+  );
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [relationship, setRelationship] = useState<Relationship>("Mamá");
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const childFirstName = childFullName.split(" ")[0];
+  const isSuccess = state.status === "success";
+  const serverError =
+    state.status === "error" && !pending ? state.message : null;
+
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess();
+    }
+  }, [isSuccess, onSuccess]);
 
   function clearError(field: keyof FieldErrors) {
     setErrors((previous) => {
@@ -64,23 +91,21 @@ export function LinkParentForm({
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
-
-    const isValid = Object.keys(nextErrors).length === 0;
-    if (!isValid) {
+    if (isSuccess) {
+      event.preventDefault();
       return;
     }
 
-    setFullName("");
-    setEmail("");
-    setRelationship("Mamá");
-    onSent();
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      event.preventDefault();
+    }
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <form noValidate action={formAction} onSubmit={handleSubmit}>
       <div className="flex items-center justify-between border-b border-border px-[26px] py-5 short:py-3">
         <div className="min-w-0">
           <div
@@ -104,6 +129,9 @@ export function LinkParentForm({
       </div>
 
       <div className="px-[26px] py-[22px] short:py-4">
+        <input type="hidden" name="childId" value={childId} />
+        <input type="hidden" name="relationship" value={relationship} />
+
         <div className="mb-5 flex gap-[11px] rounded-[14px] bg-invite-info-bg px-4 py-[13px] short:mb-3.5 short:py-2.5">
           <InfoIcon className="mt-px flex-none text-invite-info-icon" />
           <span className="text-[13.5px] leading-[1.45] text-invite-info-fg">
@@ -118,6 +146,7 @@ export function LinkParentForm({
           </label>
           <input
             id="parent-name"
+            name="fullName"
             type="text"
             value={fullName}
             onChange={(event) => {
@@ -144,6 +173,7 @@ export function LinkParentForm({
           </label>
           <input
             id="parent-email"
+            name="email"
             type="email"
             value={email}
             onChange={(event) => {
@@ -203,20 +233,35 @@ export function LinkParentForm({
             CÓDIGO DE INVITACIÓN
           </div>
           <div className="font-display text-[34px] leading-[normal] font-semibold tracking-[7px] text-invite-code-value short:text-[30px]">
-            {INVITATION_CODE}
+            {isSuccess && state.code ? state.code : CODE_PLACEHOLDER}
           </div>
           <div className="mt-1.5 text-[13px] leading-[normal] text-invite-code-label short:mt-1">
-            Vence en 7 días
+            {isSuccess ? "Vence en 7 días" : "Se genera al enviar la invitación"}
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-coral-light to-coral py-[14px] text-[15.5px] leading-[normal] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] short:py-3"
-        >
-          <SendIcon />
-          Enviar invitación
-        </button>
+        {isSuccess && state.email && (
+          <p className="mb-5 rounded-[12px] bg-status-active-bg px-4 py-3 text-center text-[13.5px] font-bold text-status-active-fg short:mb-3.5">
+            Invitación enviada a {state.email}
+          </p>
+        )}
+
+        {serverError && (
+          <p className="mb-5 rounded-[12px] border border-danger/30 bg-paper px-4 py-3 text-center text-[13.5px] font-bold text-danger short:mb-3.5">
+            {serverError}
+          </p>
+        )}
+
+        {!isSuccess && (
+          <button
+            type="submit"
+            disabled={pending}
+            className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-coral-light to-coral py-[14px] text-[15.5px] leading-[normal] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70 short:py-3"
+          >
+            <SendIcon />
+            {pending ? "Enviando…" : "Enviar invitación"}
+          </button>
+        )}
       </div>
     </form>
   );

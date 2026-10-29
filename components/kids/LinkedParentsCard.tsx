@@ -3,6 +3,7 @@ import type { LinkedParent } from "@/lib/data";
 
 type LinkedParentsCardProps = {
   parents: LinkedParent[];
+  childId: string;
   childFullName: string;
 };
 
@@ -14,6 +15,7 @@ function statusLabel(parent: LinkedParent) {
 
 export function LinkedParentsCard({
   parents,
+  childId,
   childFullName,
 }: LinkedParentsCardProps) {
   return (
@@ -23,7 +25,10 @@ export function LinkedParentsCard({
       </div>
       <div className="flex flex-col gap-3.5">
         {parents.map((parent) => (
-          <div key={parent.name} className="flex items-center gap-3">
+          <div
+            key={`${parent.name}-${parent.relationship}`}
+            className="flex items-center gap-3"
+          >
             <div
               className="flex size-10 flex-none items-center justify-center rounded-full font-display text-base font-semibold"
               style={{
@@ -52,7 +57,7 @@ export function LinkedParentsCard({
             </span>
           </div>
         ))}
-        <LinkParentModal childFullName={childFullName} />
+        <LinkParentModal childId={childId} childFullName={childFullName} />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { LinkedParentsCard } from "@/components/kids/LinkedParentsCard";
 import { ChevronLeftIcon, SunIcon } from "@/components/ui/icons";
 import { requireProfile } from "@/lib/auth/profile";
 import { toChildView, type ChildRow } from "@/lib/kids/children";
+import { toLinkedParents } from "@/lib/kids/parents";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">) {
@@ -25,6 +26,22 @@ export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">)
 
   if (!row) notFound();
 
+  const [{ data: invitationRows }, { data: linkRows }] = await Promise.all([
+    supabase
+      .from("invitations")
+      .select(
+        "id, child_id, full_name, email, relationship, status, code, expires_at",
+      )
+      .eq("child_id", row.id)
+      .in("status", ["pending", "accepted"])
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("parent_children")
+      .select("parent_id, relationship")
+      .eq("child_id", row.id),
+  ]);
+
+  const parents = toLinkedParents(invitationRows ?? [], linkRows ?? []);
   const child = toChildView(row);
 
   const details = [
@@ -106,7 +123,8 @@ export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">)
               Resumen del día
             </a>
             <LinkedParentsCard
-              parents={child.parents}
+              parents={parents}
+              childId={row.id}
               childFullName={child.fullName}
             />
           </div>
