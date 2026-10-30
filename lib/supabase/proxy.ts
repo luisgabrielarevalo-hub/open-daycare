@@ -57,7 +57,9 @@ export async function updateSession(request: NextRequest) {
 
   // Do not run code between createServerClient and getClaims().
   const { data } = await supabase.auth.getClaims();
-  const isAuthenticated = Boolean(data?.claims?.sub);
+  const claims = data?.claims;
+  const isAuthenticated = Boolean(claims?.sub);
+  const isParent = claims?.user_metadata?.role === "parent";
   const { pathname, search } = request.nextUrl;
 
   if (isProtectedPath(pathname) && !isAuthenticated) {
@@ -67,6 +69,14 @@ export async function updateSession(request: NextRequest) {
     loginUrl.searchParams.set("next", `${pathname}${search}`);
 
     return copyAuthState(supabaseResponse, NextResponse.redirect(loginUrl));
+  }
+
+  if (isParent && (pathname === "/kids" || pathname.startsWith("/kids/"))) {
+    const homeUrl = request.nextUrl.clone();
+    homeUrl.pathname = "/";
+    homeUrl.search = "";
+
+    return copyAuthState(supabaseResponse, NextResponse.redirect(homeUrl));
   }
 
   if (isAuthPath(pathname) && isAuthenticated) {

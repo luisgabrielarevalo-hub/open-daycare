@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { AddChildModal } from "@/components/kids/AddChildModal";
 import { KidsDirectory } from "@/components/kids/KidsDirectory";
+import { redirect } from "next/navigation";
 import { requireProfile } from "@/lib/auth/profile";
 import { toChildView, type ChildRow, type RoomOption } from "@/lib/kids/children";
 import { createClient } from "@/lib/supabase/server";
@@ -10,6 +11,8 @@ export default async function KidsPage() {
     requireProfile(),
     createClient(),
   ]);
+
+  if (profile.roleKey === "parent") redirect("/");
 
   const [{ data: rooms }, { data: rows }] = await Promise.all([
     supabase.from("rooms").select("id, name"),

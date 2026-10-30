@@ -1,6 +1,6 @@
 # SPEC 15 — Activación de la cuenta del padre y vínculo con el niño
 
-> **Estado:** Draft
+> **Estado:** Aprobado
 > **Depende de:** SPEC 03 (pantalla de activación), SPEC 09 (auth, `requireProfile` y protección de rutas), SPEC 13 (tablas `invitations`, `parent_children` y trigger de alta; implementar antes), SPEC 14 (invitación y código por correo; implementar antes)
 > **Fecha:** 2026-10-29
 > **Objetivo:** Activar la invitación desde `/auth/activate` creando la cuenta del padre en Supabase Auth y su vínculo con el niño, y limitar al rol `parent` a la ruta `/` de la app.
@@ -113,32 +113,32 @@ type InvitationLookup = {
 
 ## Criterios de aceptación
 
-- [ ] `/auth/activate` carga sin errores en consola y precarga el código de `?code=`.
-- [ ] Un código de menos de cinco caracteres muestra un error y no crea ninguna cuenta.
-- [ ] Un código inexistente muestra `El código de invitación no es válido.` y no crea ninguna cuenta.
-- [ ] Una invitación vencida muestra `La invitación venció. Pedí una nueva invitación a la guardería.`
-- [ ] Una invitación ya utilizada muestra `Esta invitación ya fue utilizada.`
-- [ ] Con el consentimiento sin marcar, el formulario muestra el error y no se envía.
-- [ ] Con la contraseña de menos de ocho caracteres, el formulario muestra el error y no se envía.
-- [ ] Con datos válidos, el botón muestra `Activando…`, queda deshabilitado y la cuenta queda creada.
-- [ ] La cuenta creada tiene `email_confirm` activo y su fila en `public.users` tiene `role = 'parent'`, `status = 'active'`, el `daycare_id` de la guardería del niño y el nombre del padre.
-- [ ] La activación crea el vínculo en `public.parent_children` con el parentesco de la invitación.
-- [ ] La invitación queda en `status = 'accepted'` con `accepted_at` informado.
-- [ ] `children.photo_consent` refleja el valor del checkbox del formulario.
-- [ ] Con un email que ya tiene cuenta, la activación muestra `Ya existe una cuenta con este email. Iniciá sesión.` y no crea un vínculo.
-- [ ] Tras activar, el navegador llega a `/auth/login?activated=1` y se muestra `Cuenta activada. Iniciá sesión.`
-- [ ] Con el código y la contraseña creados, el padre puede iniciar sesión en `/auth/login`.
-- [ ] El padre que entra a `/kids` es redirigido a `/`.
-- [ ] El padre que entra a `/kids/<slug>` es redirigido a `/`.
-- [ ] El sidebar del padre no muestra el ítem `Niños` ni el botón `Nueva publicación`.
-- [ ] El padre ve el feed de `/` con el mock actual y el rol `Familia`.
-- [ ] El conteo de niños del feed del padre corresponde a sus propios hijos.
-- [ ] El feed, el perfil del niño y la modal de vincular padre siguen funcionando igual para el staff.
-- [ ] `SUPABASE_SERVICE_ROLE_KEY` no aparece en ningún archivo versionado ni en variables `NEXT_PUBLIC_*`.
-- [ ] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
-- [ ] Playwright verifica el flujo completo a 1440×900 y 390×844 sin desbordamiento horizontal.
-- [ ] Las pantallas de activación y login conservan el diseño de SPEC 03, salvo los estados de error, carga y el aviso de cuenta activada.
-- [ ] Los usuarios, vínculos e invitaciones creados durante la verificación se eliminan con SQL del MCP y las tablas quedan como estaban antes de la prueba.
+- [x] `/auth/activate` carga sin errores en consola y precarga el código de `?code=`.
+- [x] Un código de menos de cinco caracteres muestra un error y no crea ninguna cuenta.
+- [x] Un código inexistente muestra `El código de invitación no es válido.` y no crea ninguna cuenta.
+- [x] Una invitación vencida muestra `La invitación venció. Pedí una nueva invitación a la guardería.`
+- [x] Una invitación ya utilizada muestra `Esta invitación ya fue utilizada.`
+- [x] Con el consentimiento sin marcar, el formulario muestra el error y no se envía.
+- [x] Con la contraseña de menos de ocho caracteres, el formulario muestra el error y no se envía.
+- [x] Con datos válidos, el botón muestra `Activando…`, queda deshabilitado y la cuenta queda creada.
+- [x] La cuenta creada tiene `email_confirm` activo y su fila en `public.users` tiene `role = 'parent'`, `status = 'active'`, el `daycare_id` de la guardería del niño y el nombre del padre.
+- [x] La activación crea el vínculo en `public.parent_children` con el parentesco de la invitación.
+- [x] La invitación queda en `status = 'accepted'` con `accepted_at` informado.
+- [x] `children.photo_consent` refleja el valor del checkbox del formulario.
+- [x] Con un email que ya tiene cuenta, la activación muestra `Ya existe una cuenta con este email. Iniciá sesión.` y no crea un vínculo.
+- [x] Tras activar, el navegador llega a `/auth/login?activated=1` y se muestra `Cuenta activada. Iniciá sesión.`
+- [x] Con el código y la contraseña creados, el padre puede iniciar sesión en `/auth/login`.
+- [x] El padre que entra a `/kids` es redirigido a `/`.
+- [x] El padre que entra a `/kids/<slug>` es redirigido a `/`.
+- [x] El sidebar del padre no muestra el ítem `Niños` ni el botón `Nueva publicación`.
+- [x] El padre ve el feed de `/` con el mock actual y el rol `Familia`.
+- [x] El conteo de niños del feed del padre corresponde a sus propios hijos.
+- [x] El feed, el perfil del niño y la modal de vincular padre siguen funcionando igual para el staff.
+- [x] `SUPABASE_SERVICE_ROLE_KEY` no aparece en ningún archivo versionado ni en variables `NEXT_PUBLIC_*`.
+- [x] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
+- [x] Playwright verifica el flujo completo a 1440×900 y 390×844 sin desbordamiento horizontal.
+- [x] Las pantallas de activación y login conservan el diseño de SPEC 03, salvo los estados de error, carga y el aviso de cuenta activada.
+- [x] Los usuarios, vínculos e invitaciones creados durante la verificación se eliminan con SQL del MCP y las tablas quedan como estaban antes de la prueba.
 
 ## Decisiones tomadas y descartadas
 

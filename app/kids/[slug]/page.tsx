@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { AllergyNote } from "@/components/kids/AllergyNote";
 import { LinkedParentsCard } from "@/components/kids/LinkedParentsCard";
@@ -15,6 +15,8 @@ export default async function ChildProfilePage(props: PageProps<"/kids/[slug]">)
     requireProfile(),
     createClient(),
   ]);
+
+  if (profile.roleKey === "parent") redirect("/");
 
   const { data: row } = await supabase
     .from("children")
