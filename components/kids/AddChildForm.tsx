@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, type FormEvent } from "react";
+import { useActionState, useState, type FormEvent } from "react";
 import { createChild, type CreateChildState } from "@/app/kids/actions";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import type { RoomOption } from "@/lib/kids/children";
@@ -37,8 +37,18 @@ function getTodayValue() {
 }
 
 export function AddChildForm({ rooms, onCancel, onSaved }: AddChildFormProps) {
+  // Success handling belongs to the action itself, not to an Effect that
+  // watches the returned state.
   const [state, formAction, pending] = useActionState(
-    createChild,
+    async (previousState: CreateChildState, formData: FormData) => {
+      const nextState = await createChild(previousState, formData);
+
+      if (nextState.status === "success") {
+        onSaved();
+      }
+
+      return nextState;
+    },
     initialState,
   );
   const [fullName, setFullName] = useState("");
@@ -47,12 +57,6 @@ export function AddChildForm({ rooms, onCancel, onSaved }: AddChildFormProps) {
   const [allergies, setAllergies] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
-
-  useEffect(() => {
-    if (state.status === "success") {
-      onSaved();
-    }
-  }, [state, onSaved]);
 
   function clearError(field: keyof FieldErrors) {
     setErrors((previous) => {

@@ -15,7 +15,7 @@
   /* Text */
   --color-ink: #3f362e;
   --color-body: #4a4038;
-  --color-muted: #94887b;
+  --color-muted: #6f6559;
   --color-muted-soft: #a89a8b;
   --color-nav-inactive: #6e6359;
   --color-section-label: #8a7c6d;
@@ -23,7 +23,7 @@
   /* Coral */
   --color-coral: #ee8164;
   --color-coral-light: #f4977e;
-  --color-coral-deep: #c5503a;
+  --color-coral-deep: #b2452e;
   --color-coral-deep-light: #d9583c;
   --color-coral-deep-soft: #e0654a;
   --color-coral-soft: #fbe3d8;
@@ -67,7 +67,7 @@
 
   /* Parent link status */
   --color-status-active-bg: #cfebd8;
-  --color-status-active-fg: #3e9b6c;
+  --color-status-active-fg: #276645;
   --color-status-pending-bg: #f7e7a6;
   --color-status-pending-fg: #9a7b1e;
 
@@ -84,20 +84,22 @@
 
   /* Auth */
   --color-auth-bg: #fbf4ec;
-  --color-auth-border: #eadfd0;
-  --color-auth-placeholder: #b6a99b;
+  --color-auth-border: #948a7c;
+  --color-auth-placeholder: #7e756b;
   --color-auth-focus: #f2a78e;
-  --color-auth-gradient-start: #f6a98e;
-  --color-auth-gradient-middle: #f2937a;
-  --color-auth-gradient-end: #ec7e62;
+  --color-auth-gradient-start: #ab5442;
+  --color-auth-gradient-middle: #a04c39;
+  --color-auth-gradient-end: #93422f;
+  --color-cta-from: #bd4c32;
+  --color-cta-to: #ad422c;
   --color-consent-bg: #fbf1d6;
   --color-consent-text: #8a7234;
   --color-consent-check: #5fb97e;
 
   /* Modal / form */
   --color-modal-bg: #fbf4ec;
-  --color-field-border: #eadfd0;
-  --color-field-placeholder: #b6a99b;
+  --color-field-border: #948a7c;
+  --color-field-placeholder: #7e756b;
   --color-field-focus: #f2a78e;
   --color-danger: #c5413a;
   --color-scrim: rgba(63, 54, 46, 0.35);

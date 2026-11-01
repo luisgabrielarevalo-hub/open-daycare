@@ -71,6 +71,8 @@ Work one screen/feature per spec. Specs live in `specs/NN-slug.md`, written in S
 - `/spec` — design the spec section by section.
 - `/spec-impl` — implement an approved spec (`Estado: Aprobado`), create/switch to the `spec-NN-slug` branch (`AutoCreateBranch` in `specs/.spec-config.yml`), step by step with diff reviews.
 - `/verificar-spec <spec>` — runs the `spec-verifier` subagent (`.opencode/agent/spec-verifier.md`): verifies each criterion with static checks, Context7 (Next.js) and Playwright, applies minimal fixes, and edits only the checkboxes.
+- `db-migrator` — agent (`.opencode/agents/db-migrator.md`): audits the remote schema against `supabase/migrations/`, designs one migration per logical change, applies each one with the Supabase MCP after explicit confirmation, saves `<version>_<name>.sql` with the exact SQL, and verifies with SQL + advisors. It never edits specs or app code. Invoke it from the agent picker or ask the main agent to delegate.
+- `/accesibilidad <archivo|directorio|ruta>` — runs the `accessibility-checker` subagent (`.opencode/agents/accessibility-checker.md`): audits WCAG 2.2 AA with static checks plus Playwright (accessibility tree, measured contrast, keyboard and focus, overlays), applies minimal fixes in `app/` and `components/`, and asks before changing color tokens or visible copy.
 
 ## Environment
 
