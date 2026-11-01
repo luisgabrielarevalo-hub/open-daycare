@@ -59,7 +59,7 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
         className="flex items-center gap-[11px] px-2 pt-1 pb-[22px]"
       >
         <div className="flex size-[38px] flex-none items-center justify-center rounded-xl bg-linear-155 from-avatar-peach-light to-avatar-peach">
-          <SunIcon className="text-white" />
+          <SunIcon className="text-white" aria-hidden />
         </div>
         <div>
           <div className="font-display text-[17px] leading-none font-semibold text-ink">
@@ -77,9 +77,9 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
         <button
           type="button"
           onClick={onCompose}
-          className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral-light to-coral py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
+          className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-cta-from to-cta-to py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
         >
-          <PlusIcon />
+          <PlusIcon aria-hidden />
           Nueva publicación
         </button>
       )}
@@ -96,7 +96,7 @@ export function Sidebar({ profile, activeNav, onCompose }: SidebarProps) {
                 : "font-semibold text-nav-inactive"
             }`}
           >
-            <NavIcon />
+            <NavIcon aria-hidden />
             {label}
           </SidebarLink>
         ))}

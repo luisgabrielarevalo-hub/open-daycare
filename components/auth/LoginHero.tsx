@@ -22,18 +22,18 @@ export function LoginHero() {
       </div>
 
       <div className="relative">
-        <h1 className="mb-[18px] font-display text-[42px] font-semibold leading-[1.12]">
+        <p className="mb-[18px] font-display text-[42px] font-semibold leading-[1.12]">
           El día de cada niño,
           <br />
           compartido con su familia.
-        </h1>
-        <p className="max-w-[430px] text-[17px] leading-[1.6] text-white/92">
+        </p>
+        <p className="max-w-[430px] text-[17px] leading-[1.6] text-white">
           Publicá momentos, gestioná las salas y mantené a las familias cerca,
           desde un solo lugar.
         </p>
       </div>
 
-      <div className="relative text-[14px] text-white/90">
+      <div className="relative text-[14px] text-white">
         🌿 Guardería Sala Soles
       </div>
     </div>

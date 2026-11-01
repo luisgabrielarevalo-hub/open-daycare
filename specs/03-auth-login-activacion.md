@@ -99,6 +99,18 @@ Esta spec no introduce estructuras de datos nuevas. Todo el contenido es estáti
 | El logo compacto móvil no existe en el mockup | Reutilizar el patrón visual del logo del sidebar en tamaño pequeño |
 | Los CTAs con `href="#"` pueden parecer funcionales | Documentar que la pantalla es visual y verificar que no ejecutan auth |
 
+## Desviaciones deliberadas de accesibilidad (WCAG 2.2 AA)
+
+El mockup original no cumple AA en contraste. Se desvía del diseño en estos puntos, a propósito:
+
+| Elemento | Mockup | Implementación | Motivo |
+| --- | --- | --- | --- |
+| Panel coral del login | `#F6A78E → #F2937A → #EC7E62` | `#AB5442 → #A04C39 → #93422F` (`auth-gradient-*`) | Texto blanco sobre el coral original daba 1.80–2.72:1; ahora 5.15–6.86:1 || CTA principal (login, activación, sidebar, modales) | `coral-light → coral` | `cta-from → cta-to` (`#BD4C32 → #AD422C`) | Blanco sobre coral original daba 2.19–2.64:1; ahora 4.95–5.85:1 |
+| Etiquetas de campo | `EMAIL`, `CONTRASEÑA` en mayúsculas | Texto `Email`, `Contraseña` + `uppercase` en CSS | Evita que los lectores de pantalla deletreen; el aspecto es idéntico |
+| Foco de los campos | Solo cambio de borde | Borde + `focus-visible:outline-2` `coral-deep` | El borde solo daba 1.96:1 |
+| `muted`, `coral-deep`, `auth-border`, `auth-placeholder`, `status-active-fg` | Tonos claros | Tonos oscurecidos en `@theme` | 3.17, 4.20, 1.21, 2.30 y 2.71:1 → ≥4.5:1 |
+| Titular del panel coral | `<h1>` | `<p>` (mismo estilo) | Solo debe haber un `h1` por vista |
+
 ## Qué **no** entra en esta spec
 
 - Autenticación real, sesiones o roles.

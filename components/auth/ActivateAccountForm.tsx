@@ -65,7 +65,7 @@ export function ActivateAccountForm({
         <div className="mb-[18px]">
           <AuthField
             id="activate-code"
-            label="CÓDIGO DE INVITACIÓN"
+            label="Código de invitación"
             type="text"
             name="code"
             placeholder="Código de 5 caracteres"
@@ -79,7 +79,7 @@ export function ActivateAccountForm({
         <div className="mb-[18px]">
           <AuthField
             id="activate-email"
-            label="EMAIL"
+            label="Email"
             type="email"
             name="email"
             placeholder="tu@email.com"
@@ -92,7 +92,7 @@ export function ActivateAccountForm({
         <div className="mb-[18px]">
           <AuthField
             id="activate-password"
-            label="CREAR CONTRASEÑA"
+            label="Crear contraseña"
             type="password"
             name="password"
             placeholder="Creá una contraseña"
@@ -131,7 +131,7 @@ export function ActivateAccountForm({
         <button
           type="submit"
           disabled={pending}
-          className="block w-full rounded-[15px] bg-linear-to-b from-coral-light to-coral py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70"
+          className="block w-full rounded-[15px] bg-linear-to-b from-cta-from to-cta-to py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {pending ? "Activando…" : "Activar mi cuenta"}
         </button>

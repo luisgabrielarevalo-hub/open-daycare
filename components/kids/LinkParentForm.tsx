@@ -256,7 +256,7 @@ export function LinkParentForm({
           <button
             type="submit"
             disabled={pending}
-            className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-coral-light to-coral py-[14px] text-[15.5px] leading-[normal] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70 short:py-3"
+            className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-linear-to-b from-cta-from to-cta-to py-[14px] text-[15.5px] leading-[normal] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70 short:py-3"
           >
             <SendIcon />
             {pending ? "Enviando…" : "Enviar invitación"}

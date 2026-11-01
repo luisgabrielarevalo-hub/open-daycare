@@ -16,13 +16,13 @@ export function AuthField({
     <div className="flex flex-col">
       <label
         htmlFor={id}
-        className="mb-2 text-[12px] font-bold tracking-[0.7px] text-muted"
+        className="mb-2 text-[12px] font-bold tracking-[0.7px] uppercase text-muted"
       >
         {label}
       </label>
       <input
         id={id}
-        className={`w-full rounded-[14px] border-[1.5px] border-auth-border bg-white px-4 py-3.5 text-[15px] text-ink placeholder:text-auth-placeholder focus:border-auth-focus focus:outline-none ${inputClassName ?? ""}`}
+        className={`w-full rounded-[14px] border-[1.5px] border-auth-border bg-white px-4 py-3.5 text-[15px] text-ink placeholder:text-auth-placeholder focus:border-auth-focus focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-deep ${inputClassName ?? ""}`}
         {...props}
       />
     </div>

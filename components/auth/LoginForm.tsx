@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { loginAction, type LoginState } from "@/app/auth/login/actions";
 import { AuthField } from "@/components/auth/AuthField";
@@ -26,12 +26,19 @@ export function LoginForm({
   const [email, setEmail] = useState(initialState.email);
   const [password, setPassword] = useState("");
   const [attempt, setAttempt] = useState(initialState.attempt);
+  const errorRef = useRef<HTMLParagraphElement>(null);
 
   if (state.attempt !== attempt) {
     setAttempt(state.attempt);
     setEmail(state.email);
     setPassword("");
   }
+
+  useEffect(() => {
+    if (state.error) {
+      errorRef.current?.focus();
+    }
+  }, [state.attempt, state.error]);
 
   return (
     <div className="flex items-center justify-center px-10 py-10">
@@ -61,13 +68,13 @@ export function LoginForm({
           </p>
         ) : null}
 
-        <form action={formAction}>
+        <form action={formAction} aria-busy={pending}>
           <input type="hidden" name="next" value={next} />
 
           <div className="mb-[18px]">
             <AuthField
               id="login-email"
-              label="EMAIL"
+              label="Email"
               type="email"
               name="email"
               placeholder="tu@email.com"
@@ -75,13 +82,15 @@ export function LoginForm({
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={state.error ? true : undefined}
+              aria-describedby={state.error ? "login-error" : undefined}
             />
           </div>
 
           <div className="mb-2.5">
             <AuthField
               id="login-password"
-              label="CONTRASEÑA"
+              label="Contraseña"
               type="password"
               name="password"
               placeholder="••••••••"
@@ -89,11 +98,16 @@ export function LoginForm({
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              aria-invalid={state.error ? true : undefined}
+              aria-describedby={state.error ? "login-error" : undefined}
             />
           </div>
 
           {state.error ? (
             <p
+              ref={errorRef}
+              id="login-error"
+              tabIndex={-1}
               role="alert"
               className="mb-[18px] text-[13px] font-bold text-coral-deep"
             >
@@ -110,10 +124,13 @@ export function LoginForm({
           <button
             type="submit"
             disabled={pending}
-            className="block w-full rounded-[15px] bg-linear-to-b from-coral-light to-coral py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70"
+            className="block w-full rounded-[15px] bg-linear-to-b from-cta-from to-cta-to py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {pending ? "Ingresando…" : "Iniciar sesión"}
           </button>
+          <p role="status" aria-live="polite" className="sr-only">
+            {pending ? "Ingresando…" : ""}
+          </p>
         </form>
 
         <p className="mt-6 text-center text-[14.5px] text-muted">
