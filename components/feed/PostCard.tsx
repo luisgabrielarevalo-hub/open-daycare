@@ -1,9 +1,9 @@
 import Image from "next/image";
-import type { Post, PostKind } from "@/lib/data";
+import type { PostKind } from "@/lib/data";
+import type { FeedPost } from "@/lib/feed/posts";
 import {
   CommentIcon,
   HeartIcon,
-  ImageIcon,
   MegaphoneIcon,
 } from "@/components/ui/icons";
 
@@ -39,12 +39,11 @@ const kindStyles: Record<PostKind, { label: string; chip: string }> = {
 };
 
 type PostCardProps = {
-  post: Post;
+  post: FeedPost;
 };
 
 export function PostCard({ post }: PostCardProps) {
   const style = kindStyles[post.kind];
-  const photos = post.photos ?? [];
 
   return (
     <article className="rounded-[20px] border border-border bg-paper px-[22px] py-5 shadow-[0_4px_16px_-12px_rgba(120,90,60,0.5)]">
@@ -53,17 +52,13 @@ export function PostCard({ post }: PostCardProps) {
           className="flex size-11 flex-none items-center justify-center rounded-full font-display text-[17px] font-semibold"
           style={{ backgroundColor: post.avatarBg, color: post.avatarColor }}
         >
-          {post.audienceKind === "room" ? (
-            <MegaphoneIcon />
-          ) : (
-            post.authorInitial
-          )}
+          {post.authorInitial}
         </div>
         <div className="min-w-0 flex-1">
           <div className="font-display text-[16.5px] font-semibold text-ink">
             {post.authorName}
           </div>
-          <div className="text-[12.5px] text-muted-soft">{post.time}</div>
+          <div className="text-[12.5px] text-muted-soft">{post.timeLabel}</div>
         </div>
         <div
           className={`flex flex-none items-center gap-[7px] rounded-full px-3 py-1.5 ${style.chip}`}
@@ -75,25 +70,36 @@ export function PostCard({ post }: PostCardProps) {
         </div>
       </header>
 
-      <div className="mb-2.5 text-[12.5px] text-muted-soft">
-        Para: {post.audience}
+      <div className="mb-2.5 flex items-center gap-1.5 text-[12.5px] text-muted-soft">
+        <span>Para:</span>
+        {post.audienceKind === "room" ? (
+          <MegaphoneIcon
+            width={14}
+            height={14}
+            className="flex-none"
+            aria-hidden
+          />
+        ) : null}
+        <span>{post.audienceLabel}</span>
       </div>
 
       <p className="text-[15.5px] leading-[1.55] text-body">{post.body}</p>
 
-      {photos.length > 0 ? (
+      {post.photos.length > 0 ? (
         <div
-          className={`mt-3.5 ${photos.length > 1 ? "grid grid-cols-2 gap-2.5" : ""}`}
+          className={`mt-3.5 ${
+            post.photos.length > 1 ? "grid grid-cols-2 gap-2.5" : ""
+          }`}
         >
-          {photos.map((photo, index) => (
+          {post.photos.map((photo, index) => (
             <div
-              key={photo}
+              key={photo.path}
               className={`relative overflow-hidden rounded-2xl bg-photo-bg ${
-                photos.length > 1 ? "aspect-square" : "aspect-[16/10]"
+                post.photos.length > 1 ? "aspect-square" : "aspect-[16/10]"
               }`}
             >
               <Image
-                src={photo}
+                src={photo.url}
                 alt={`Foto ${index + 1} de la publicación`}
                 fill
                 unoptimized
@@ -102,14 +108,6 @@ export function PostCard({ post }: PostCardProps) {
             </div>
           ))}
         </div>
-      ) : post.photoLabel ? (
-        <a
-          href="#"
-          className="mt-3.5 flex h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-photo-dashed bg-photo-bg text-photo-fg"
-        >
-          <ImageIcon />
-          <span className="text-[13.5px]">{post.photoLabel}</span>
-        </a>
       ) : null}
 
       <footer className="mt-4 flex items-center gap-[18px] border-t border-divider-soft pt-3.5">
@@ -117,17 +115,10 @@ export function PostCard({ post }: PostCardProps) {
           <HeartIcon />
           {post.reactions}
         </span>
-        <a
-          href="#"
-          className="flex items-center gap-[7px] text-sm font-bold text-muted"
-        >
+        <span className="flex items-center gap-[7px] text-sm font-bold text-muted">
           <CommentIcon />
           {post.comments}
-        </a>
-        <span className="flex-1" />
-        <a href="#" className="text-sm font-extrabold text-coral-deep">
-          Editar
-        </a>
+        </span>
       </footer>
     </article>
   );

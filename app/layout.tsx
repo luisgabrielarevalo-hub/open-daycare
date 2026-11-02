@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import { FeedProvider } from "@/components/feed/FeedProvider";
-import { posts } from "@/lib/data";
+import { getComposerData } from "@/lib/feed/composer";
 import "./globals.css";
 
 const fredoka = Fredoka({
@@ -19,14 +19,16 @@ export const metadata: Metadata = {
   description: "Feed diario de la guardería",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const composerData = await getComposerData();
+
   return (
     <html
       lang="es"
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
-        <FeedProvider initialPosts={posts}>{children}</FeedProvider>
+        <FeedProvider composerData={composerData}>{children}</FeedProvider>
       </body>
     </html>
   );

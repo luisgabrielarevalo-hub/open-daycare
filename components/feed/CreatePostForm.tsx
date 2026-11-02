@@ -9,21 +9,19 @@ import {
   type FormEvent,
 } from "react";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
-import { postRecipients, type PostKind } from "@/lib/data";
+import type { PostKind } from "@/lib/data";
+import {
+  compressImage,
+  IMAGE_PROCESS_ERROR_MESSAGE,
+} from "@/lib/feed/image";
+import type {
+  CompressedPhoto,
+  PostDraft,
+  RecipientOption,
+} from "@/lib/feed/posts";
 
 const MAX_PHOTOS = 4;
 const MAX_DESCRIPTION_LENGTH = 1000;
-
-const RECIPIENT_IDS = [
-  "mateo-fernandez",
-  "sofia-mendez",
-  "benjamin-ruiz",
-] as const;
-
-const recipients = RECIPIENT_IDS.flatMap((id) => {
-  const child = postRecipients.find((item) => item.id === id);
-  return child ? [{ ...child, id }] : [];
-});
 
 const POST_TYPES: Record<
   PostKind,
@@ -66,7 +64,7 @@ const POST_TYPES: Record<
   },
 };
 
-const POST_TYPE_ORDER = [
+const POST_TYPE_ORDER: PostKind[] = [
   "meal",
   "nap",
   "activity",
@@ -74,116 +72,231 @@ const POST_TYPE_ORDER = [
   "mood",
   "photo",
   "announcement",
-] as const;
-
-export type ChildRecipientId = (typeof RECIPIENT_IDS)[number];
-
-export type RecipientId = ChildRecipientId | "room";
-
-export type PostDraft = {
-  recipientIds: RecipientId[];
-  kind: PostKind;
-  body: string;
-  photos: string[];
-};
+];
 
 type CreatePostFormProps = {
+  recipients: RecipientOption[];
+  allChildrenPhotoConsent: boolean;
+  isSubmitting: boolean;
+  submitError: string;
   onCancel: () => void;
-  onPublish: (draft: PostDraft) => void;
+  onPublish: (draft: PostDraft) => void | Promise<void>;
 };
 
 const labelClass =
   "mb-2.5 text-[12px] font-extrabold tracking-[0.7px] text-muted";
 const groupClass = "mb-[22px]";
 
-function getFirstName(fullName: string) {
-  return fullName.split(" ")[0];
-}
-
-export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
-  const [recipientIds, setRecipientIds] = useState<RecipientId[]>([
-    RECIPIENT_IDS[0],
-  ]);
+export function CreatePostForm({
+  recipients,
+  allChildrenPhotoConsent,
+  isSubmitting,
+  submitError,
+  onCancel,
+  onPublish,
+}: CreatePostFormProps) {
+  const [recipientIds, setRecipientIds] = useState<(string | "room")[]>([]);
   const [kind, setKind] = useState<PostKind>("activity");
   const [body, setBody] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [recipientError, setRecipientError] = useState("");
+  const [selectionError, setSelectionError] = useState("");
+  const [photoError, setPhotoError] = useState("");
+  const [photos, setPhotos] = useState<CompressedPhoto[]>([]);
+  const [isProcessingPhotos, setIsProcessingPhotos] = useState(false);
   const [hasTooManyPhotos, setHasTooManyPhotos] = useState(false);
-  const photosRef = useRef<string[]>([]);
-  const transferredRef = useRef(false);
+  const photosRef = useRef<CompressedPhoto[]>([]);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     photosRef.current = photos;
   }, [photos]);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     return () => {
-      if (transferredRef.current) {
-        return;
-      }
-      photosRef.current.forEach((url) => URL.revokeObjectURL(url));
+      isMountedRef.current = false;
+      photosRef.current.forEach((photo) =>
+        URL.revokeObjectURL(photo.previewUrl),
+      );
     };
   }, []);
 
-  function handlePhotoSelection(event: ChangeEvent<HTMLInputElement>) {
+  const isRoom = recipientIds.includes("room");
+  const selectedChildren = recipients.filter((recipient) =>
+    recipientIds.includes(recipient.id),
+  );
+  const blockedChild = isRoom
+    ? null
+    : (selectedChildren.find((child) => !child.photoConsent) ?? null);
+  const photosBlocked = isRoom
+    ? !allChildrenPhotoConsent
+    : Boolean(blockedChild);
+  const photoBlockedMessage = isRoom
+    ? "No se pueden adjuntar fotos: hay niños del centro sin consentimiento de imagen."
+    : blockedChild
+      ? `${blockedChild.firstName} no tiene consentimiento para fotos.`
+      : "";
+
+  function canSelectWithoutBlockingPhotos(photoConsent: boolean) {
+    return photos.length === 0 || photoConsent;
+  }
+
+  function toggleChild(child: RecipientOption) {
+    if (isSubmitting) {
+      return;
+    }
+
+    setSelectionError("");
+    setRecipientError("");
+
+    if (
+      !recipientIds.includes(child.id) &&
+      !canSelectWithoutBlockingPhotos(child.photoConsent)
+    ) {
+      setSelectionError("Quitá las fotos para elegir ese destinatario.");
+      return;
+    }
+
+    setRecipientIds((current) => {
+      const childrenOnly = current.filter((id) => id !== "room");
+
+      if (childrenOnly.includes(child.id)) {
+        return childrenOnly.filter((id) => id !== child.id);
+      }
+
+      return [...childrenOnly, child.id];
+    });
+  }
+
+  function selectRoom() {
+    if (isSubmitting) {
+      return;
+    }
+
+    setSelectionError("");
+    setRecipientError("");
+
+    if (photos.length > 0 && !allChildrenPhotoConsent) {
+      setSelectionError("Quitá las fotos para elegir ese destinatario.");
+      return;
+    }
+
+    setRecipientIds(["room"]);
+  }
+
+  async function handlePhotoSelection(event: ChangeEvent<HTMLInputElement>) {
     const selectedFiles = Array.from(event.target.files ?? []);
+    event.target.value = "";
+
+    if (isSubmitting || photosBlocked) {
+      return;
+    }
+
     const imageFiles = selectedFiles.filter((file) =>
       file.type.startsWith("image/"),
     );
-    const remaining = MAX_PHOTOS - photos.length;
-    const acceptedFiles = imageFiles.slice(0, remaining);
 
-    if (acceptedFiles.length > 0) {
-      setPhotos((current) => [
-        ...current,
-        ...acceptedFiles.map((file) => URL.createObjectURL(file)),
-      ]);
+    if (imageFiles.length === 0) {
+      return;
     }
+
+    const remaining = MAX_PHOTOS - photos.length;
+
+    if (remaining <= 0) {
+      setHasTooManyPhotos(true);
+      return;
+    }
+
+    const acceptedFiles = imageFiles.slice(0, remaining);
 
     if (imageFiles.length > remaining) {
       setHasTooManyPhotos(true);
     }
 
-    event.target.value = "";
-  }
+    setPhotoError("");
+    setIsProcessingPhotos(true);
 
-  function removePhoto(url: string) {
-    URL.revokeObjectURL(url);
-    setPhotos((current) => current.filter((photo) => photo !== url));
-    setHasTooManyPhotos(false);
-  }
+    const compressed: CompressedPhoto[] = [];
 
-  function toggleChild(id: ChildRecipientId) {
-    setRecipientIds((current) => {
-      if (current.includes("room")) {
-        return [id];
-      }
-
-      if (current.includes(id)) {
-        if (current.length === 1) {
-          return current;
+    try {
+      for (const file of acceptedFiles) {
+        if (!isMountedRef.current) {
+          break;
         }
-        return current.filter((recipient) => recipient !== id);
+
+        try {
+          const blob = await compressImage(file);
+          compressed.push({
+            id: crypto.randomUUID(),
+            previewUrl: URL.createObjectURL(blob),
+            blob,
+          });
+        } catch (error) {
+          setPhotoError(
+            error instanceof Error
+              ? error.message
+              : IMAGE_PROCESS_ERROR_MESSAGE,
+          );
+        }
       }
 
-      return [...current, id];
-    });
+      if (!isMountedRef.current) {
+        compressed.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
+        return;
+      }
+
+      if (compressed.length > 0) {
+        setPhotos((current) => [...current, ...compressed]);
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setIsProcessingPhotos(false);
+      }
+    }
   }
 
-  function selectRoom() {
-    setRecipientIds(["room"]);
+  function removePhoto(id: string) {
+    const photo = photos.find((item) => item.id === id);
+
+    if (photo) {
+      URL.revokeObjectURL(photo.previewUrl);
+    }
+
+    setPhotos((current) => current.filter((item) => item.id !== id));
+    setHasTooManyPhotos(false);
+    setPhotoError("");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting || isProcessingPhotos) {
+      return;
+    }
+
+    setDescriptionError("");
+    setRecipientError("");
+    setSelectionError("");
+    setPhotoError("");
+
+    if (recipientIds.length === 0) {
+      setRecipientError("Elegí al menos un destinatario");
+      return;
+    }
 
     if (!body.trim()) {
       setDescriptionError("Escribí una descripción");
       return;
     }
 
-    transferredRef.current = true;
-    onPublish({
+    if (photosBlocked) {
+      setPhotoError(photoBlockedMessage);
+      return;
+    }
+
+    void onPublish({
       recipientIds,
       kind,
       body: body.trim(),
@@ -197,7 +310,8 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="text-[15px] font-bold text-muted"
+          disabled={isSubmitting}
+          className="text-[15px] font-bold text-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           Cancelar
         </button>
@@ -209,13 +323,23 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
         </span>
         <button
           type="submit"
-          className="text-[15px] font-extrabold text-coral-deep-light"
+          disabled={isSubmitting || isProcessingPhotos}
+          className="text-[15px] font-extrabold text-coral-deep-light disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Publicar
+          {isSubmitting ? "Publicando…" : "Publicar"}
         </button>
       </div>
 
       <div className="px-[26px] py-6">
+        {submitError ? (
+          <p
+            role="alert"
+            className="mb-4 rounded-[12px] border border-danger/30 bg-danger/5 px-3.5 py-2.5 text-[13px] font-semibold text-danger"
+          >
+            {submitError}
+          </p>
+        ) : null}
+
         <div
           role="group"
           aria-labelledby="post-recipient-label"
@@ -233,8 +357,9 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
                   key={child.id}
                   type="button"
                   aria-pressed={isActive}
-                  onClick={() => toggleChild(child.id)}
-                  className={`flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] py-1.5 pr-3.5 pl-1.5 text-[14px] font-bold ${
+                  disabled={isSubmitting}
+                  onClick={() => toggleChild(child)}
+                  className={`flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] py-1.5 pr-3.5 pl-1.5 text-[14px] font-bold disabled:cursor-not-allowed disabled:opacity-60 ${
                     isActive
                       ? "border-ink bg-ink text-white"
                       : "border-border bg-paper text-nav-inactive"
@@ -249,16 +374,17 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
                   >
                     {child.fullName.charAt(0)}
                   </span>
-                  {getFirstName(child.fullName)}
+                  {child.firstName}
                 </button>
               );
             })}
             <button
               type="button"
-              aria-pressed={recipientIds.includes("room")}
+              aria-pressed={isRoom}
+              disabled={isSubmitting}
               onClick={selectRoom}
-              className={`cursor-pointer rounded-full border-[1.5px] px-4 py-1.5 text-[14px] font-bold ${
-                recipientIds.includes("room")
+              className={`cursor-pointer rounded-full border-[1.5px] px-4 py-1.5 text-[14px] font-bold disabled:cursor-not-allowed disabled:opacity-60 ${
+                isRoom
                   ? "border-ink bg-ink text-white"
                   : "border-border bg-paper text-nav-inactive"
               }`}
@@ -266,6 +392,27 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
               Toda la sala
             </button>
           </div>
+          {recipients.length === 0 ? (
+            <p className="mt-2.5 text-[12.5px] text-muted">
+              No hay niños activos para etiquetar.
+            </p>
+          ) : null}
+          {recipientError ? (
+            <p
+              role="alert"
+              className="mt-2.5 text-[12.5px] font-semibold text-danger"
+            >
+              {recipientError}
+            </p>
+          ) : null}
+          {selectionError ? (
+            <p
+              role="alert"
+              className="mt-2.5 text-[12.5px] font-semibold text-danger"
+            >
+              {selectionError}
+            </p>
+          ) : null}
         </div>
 
         <div
@@ -286,8 +433,9 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
                   key={type}
                   type="button"
                   aria-pressed={isActive}
+                  disabled={isSubmitting}
                   onClick={() => setKind(type)}
-                  className={`cursor-pointer rounded-full px-4 py-2 text-[13.5px] font-extrabold ${
+                  className={`cursor-pointer rounded-full px-4 py-2 text-[13.5px] font-extrabold disabled:cursor-not-allowed disabled:opacity-60 ${
                     isActive ? style.active : style.inactive
                   }`}
                 >
@@ -311,13 +459,14 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
                 setDescriptionError("");
               }
             }}
+            disabled={isSubmitting}
             maxLength={MAX_DESCRIPTION_LENGTH}
             placeholder="Contá cómo le fue hoy…"
             aria-invalid={Boolean(descriptionError)}
             aria-describedby={
               descriptionError ? "post-description-error" : undefined
             }
-            className="min-h-[120px] w-full resize-y rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-3.5 text-[15px] leading-[1.5] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none"
+            className="min-h-[120px] w-full resize-y rounded-[14px] border-[1.5px] border-field-border bg-white px-4 py-3.5 text-[15px] leading-[1.5] text-ink placeholder:text-field-placeholder focus:border-field-focus focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
           />
           {descriptionError && (
             <p
@@ -336,11 +485,11 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
           <div className="flex flex-wrap gap-3">
             {photos.map((photo, index) => (
               <div
-                key={photo}
+                key={photo.id}
                 className="relative size-24 overflow-hidden rounded-[14px] border border-border bg-photo-bg"
               >
                 <Image
-                  src={photo}
+                  src={photo.previewUrl}
                   alt={`Foto ${index + 1} para la publicación`}
                   fill
                   unoptimized
@@ -349,8 +498,9 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
                 <button
                   type="button"
                   aria-label={`Quitar foto ${index + 1}`}
-                  onClick={() => removePhoto(photo)}
-                  className="absolute top-1 right-1 flex size-6 cursor-pointer items-center justify-center rounded-full bg-ink/70 text-white"
+                  onClick={() => removePhoto(photo.id)}
+                  disabled={isSubmitting}
+                  className="absolute top-1 right-1 flex size-6 cursor-pointer items-center justify-center rounded-full bg-ink/70 text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <CloseIcon width={14} height={14} strokeWidth={2.4} />
                 </button>
@@ -358,30 +508,65 @@ export function CreatePostForm({ onCancel, onPublish }: CreatePostFormProps) {
             ))}
 
             {photos.length < MAX_PHOTOS ? (
-              <>
-                <label
-                  htmlFor="post-photos"
-                  className="flex size-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[14px] border-[1.5px] border-dashed border-photo-dashed bg-photo-bg text-[12px] text-photo-fg"
+              photosBlocked ? (
+                <div
+                  aria-disabled="true"
+                  className="flex size-24 flex-col items-center justify-center gap-1.5 rounded-[14px] border-[1.5px] border-dashed border-photo-dashed bg-photo-bg text-[12px] text-photo-fg opacity-60"
                 >
                   <PlusIcon className="text-coral-deep" width={22} height={22} />
                   Agregar
-                </label>
-                <input
-                  id="post-photos"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoSelection}
-                  className="sr-only"
-                />
-              </>
+                </div>
+              ) : (
+                <>
+                  <label
+                    htmlFor="post-photos"
+                    className={`flex size-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[14px] border-[1.5px] border-dashed border-photo-dashed bg-photo-bg text-[12px] text-photo-fg ${
+                      isSubmitting || isProcessingPhotos
+                        ? "pointer-events-none opacity-60"
+                        : ""
+                    }`}
+                  >
+                    <PlusIcon
+                      className="text-coral-deep"
+                      width={22}
+                      height={22}
+                    />
+                    {isProcessingPhotos ? "Procesando…" : "Agregar"}
+                  </label>
+                  <input
+                    id="post-photos"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePhotoSelection}
+                    disabled={isSubmitting || isProcessingPhotos}
+                    className="sr-only"
+                  />
+                </>
+              )
             ) : null}
           </div>
-          {hasTooManyPhotos && (
+          {photosBlocked && photoBlockedMessage ? (
+            <p
+              role="alert"
+              className="mt-2.5 text-[12.5px] font-semibold text-danger"
+            >
+              {photoBlockedMessage}
+            </p>
+          ) : null}
+          {photoError ? (
+            <p
+              role="alert"
+              className="mt-2.5 text-[12.5px] font-semibold text-danger"
+            >
+              {photoError}
+            </p>
+          ) : null}
+          {hasTooManyPhotos ? (
             <p className="mt-2.5 text-[12.5px] font-semibold text-danger">
               Podés adjuntar hasta 4 fotos
             </p>
-          )}
+          ) : null}
         </div>
       </div>
     </form>

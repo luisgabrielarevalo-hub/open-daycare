@@ -8,7 +8,11 @@ type ComposerPromptProps = {
 };
 
 export function ComposerPrompt({ initial }: ComposerPromptProps) {
-  const { openComposer } = useFeed();
+  const { canCompose, openComposer } = useFeed();
+
+  if (!canCompose) {
+    return null;
+  }
 
   return (
     <button

@@ -9,11 +9,11 @@ import {
   type ReactNode,
 } from "react";
 import { CreatePostModal } from "@/components/feed/CreatePostModal";
-import type { Post } from "@/lib/data";
+import type { ComposerData } from "@/lib/feed/posts";
 
 type FeedContextValue = {
-  posts: Post[];
-  addPost: (post: Post) => void;
+  composerData: ComposerData | null;
+  canCompose: boolean;
   isComposerOpen: boolean;
   openComposer: () => void;
   closeComposer: () => void;
@@ -22,24 +22,33 @@ type FeedContextValue = {
 const FeedContext = createContext<FeedContextValue | null>(null);
 
 type FeedProviderProps = {
-  initialPosts: Post[];
+  composerData: ComposerData | null;
   children: ReactNode;
 };
 
-export function FeedProvider({ initialPosts, children }: FeedProviderProps) {
-  const [posts, setPosts] = useState(initialPosts);
+export function FeedProvider({ composerData, children }: FeedProviderProps) {
   const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const canCompose = composerData !== null;
 
-  const addPost = useCallback((post: Post) => {
-    setPosts((current) => [post, ...current]);
-  }, []);
+  const openComposer = useCallback(() => {
+    if (!composerData) {
+      return;
+    }
 
-  const openComposer = useCallback(() => setIsComposerOpen(true), []);
+    setIsComposerOpen(true);
+  }, [composerData]);
+
   const closeComposer = useCallback(() => setIsComposerOpen(false), []);
 
   const value = useMemo(
-    () => ({ posts, addPost, isComposerOpen, openComposer, closeComposer }),
-    [posts, addPost, isComposerOpen, openComposer, closeComposer],
+    () => ({
+      composerData,
+      canCompose,
+      isComposerOpen,
+      openComposer,
+      closeComposer,
+    }),
+    [composerData, canCompose, isComposerOpen, openComposer, closeComposer],
   );
 
   return (
