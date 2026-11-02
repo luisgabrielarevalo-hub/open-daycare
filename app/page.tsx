@@ -2,9 +2,11 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ComposerPrompt } from "@/components/feed/ComposerPrompt";
 import { FeedPosts } from "@/components/feed/FeedPosts";
 import { requireProfile } from "@/lib/auth/profile";
+import { getTodayPosts } from "@/lib/feed/posts";
 
 export default async function Home() {
   const profile = await requireProfile();
+  const posts = await getTodayPosts(profile.id);
   const firstName = profile.name.split(" ")[0];
 
   return (
@@ -31,7 +33,7 @@ export default async function Home() {
           <span className="h-px flex-1 bg-divider" />
         </div>
 
-        <FeedPosts />
+        <FeedPosts posts={posts} />
       </div>
     </AppShell>
   );

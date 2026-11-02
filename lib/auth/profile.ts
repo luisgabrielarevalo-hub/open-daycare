@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { feedDateLabel, type StaffProfile } from "@/lib/data";
+import type { StaffProfile } from "@/lib/data";
+import { formatDateLabel } from "@/lib/feed/dates";
 import { createClient } from "@/lib/supabase/server";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -52,12 +53,13 @@ export const requireProfile = cache(async (): Promise<StaffProfile> => {
     : "";
 
   return {
+    id: claims.sub,
     name,
     role: ROLE_LABELS[row?.role ?? ""] ?? "Staff",
     roleKey: roleKeyFromRow(row?.role),
     initial: name.charAt(0).toUpperCase() || "U",
     room,
     childCount: childCount ?? 0,
-    dateLabel: feedDateLabel,
+    dateLabel: formatDateLabel(),
   };
 });

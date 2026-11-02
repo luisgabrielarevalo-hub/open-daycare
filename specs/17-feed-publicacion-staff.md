@@ -1,6 +1,6 @@
 # SPEC 17 — Feed: publicación persistida de staff
 
-> **Estado:** Borrador
+> **Estado:** Implementado
 > **Depende de:** SPEC 06 (modal “Nueva publicación”), SPEC 09 (auth y `requireProfile`), SPEC 12 (niños reales), SPEC 15 (sidebar del padre), SPEC 16 (tablas, RLS, `create_post` y bucket `post-photos`; implementar antes)
 > **Fecha:** 2026-11-02
 > **Objetivo:** Reemplazar el feed mock y la publicación de sesión por publicaciones reales de staff en Supabase, con o sin fotos, compresión en el navegador, URLs firmadas y respeto del consentimiento de imagen.
@@ -197,50 +197,50 @@ type PostRow = {
 
 ## Criterios de aceptación
 
-- [ ] `/` muestra solo publicaciones de hoy leídas de Supabase, ordenadas de más reciente a más antigua.
-- [ ] Sin publicaciones de hoy, el feed muestra “Todavía no hay publicaciones hoy” y el texto de apoyo.
-- [ ] `profile.dateLabel` muestra la fecha real en español (`lunes 2 nov`), no `martes 17 jun`.
-- [ ] El saludo y el conteo de niños siguen funcionando.
-- [ ] La tarjeta muestra el nombre del staff autor y su inicial con una paleta determinística.
-- [ ] Un post propio muestra “HH:mm · publicado por vos”; uno de otro staff muestra solo “HH:mm”.
-- [ ] Un post a un niño muestra “familia de {nombre}”.
-- [ ] Un post a dos o más niños muestra “sus familias”.
-- [ ] Un post a “Toda la sala” muestra “toda la sala” con el ícono de megáfono en la línea de audiencia.
-- [ ] El enlace “Editar” no se renderiza.
-- [ ] Las fotos se ven con la proporción actual (una a ancho completo, varias en cuadrícula) y cargan desde URLs firmadas.
-- [ ] “Nueva publicación” y “Compartí un momento…” abren el mismo modal en `/` y `/kids`.
-- [ ] Un usuario `parent` no ve “Nueva publicación” ni “Compartí un momento…”, y `openComposer` no abre el modal.
-- [ ] El modal abre sin destinatario seleccionado.
-- [ ] Publicar sin destinatario muestra “Elegí al menos un destinatario” y no cierra.
-- [ ] El tipo inicial sigue siendo Actividad.
-- [ ] Los destinatarios son los niños activos reales del daycare, no Mateo/Sofía/Benjamín fijos.
-- [ ] Se pueden seleccionar varios niños y “Toda la sala” sigue siendo excluyente.
-- [ ] Se puede deseleccionar el último niño; la validación aparece al publicar.
-- [ ] La descripción vacía muestra “Escribí una descripción” y el máximo sigue siendo 1000.
-- [ ] Se pueden adjuntar hasta 4 imágenes; cada una se convierte a WebP de hasta 1600 px.
-- [ ] Una imagen de más de 10 MB se rechaza con un mensaje claro.
-- [ ] Un archivo que no se puede decodificar se rechaza sin romper el modal.
-- [ ] Las miniaturas se ven y se pueden quitar; el aviso de exceso desaparece al quitar una.
-- [ ] Con “Toda la sala” y un niño sin consentimiento, el selector de fotos está deshabilitado y explica el motivo.
-- [ ] Con un niño sin consentimiento seleccionado, el selector de fotos está deshabilitado y nombra al niño.
-- [ ] Si hay fotos y se intenta elegir un destinatario sin consentimiento, la selección se rechaza con “Quitá las fotos para elegir ese destinatario.”
-- [ ] “Publicar” sube las fotos a `<daycareId>/<draftId>/<n>.webp` y llama a `create_post`.
-- [ ] Mientras publica, el botón dice “Publicando…”, los campos están deshabilitados y el modal no se puede cerrar.
-- [ ] Al publicar con éxito, el modal se cierra, el formulario se resetea y el post aparece primero sin recargar.
-- [ ] El post persiste al recargar y al navegar a `/kids` y volver.
-- [ ] Si el insert falla, el modal queda abierto con el texto y las fotos, muestra un error y borra los objetos subidos.
-- [ ] Si la subida de una foto falla, se borran las anteriores y se muestra un error.
-- [ ] Publicar sin fotos funciona igual.
-- [ ] El Server Action traduce `children_required`, `invalid_children`, `photo_consent_missing`, `too_many_photos` e `invalid_photo_path`.
-- [ ] `createPost` rechaza un cuerpo vacío, más de 1000 caracteres, tipos inválidos y más de 4 rutas.
-- [ ] El bucket sigue siendo privado: una URL pública directa no devuelve la imagen.
-- [ ] Un padre ve en SQL los posts de sus hijos y los de “Toda la sala”, y no los de otros niños.
-- [ ] Un padre no puede publicar ni subir archivos.
-- [ ] `next.config.ts` permite el host de Supabase y `/storage/v1/object/sign/**`.
-- [ ] A 390×844 no hay desbordamiento horizontal y el modal alto hace scroll interno.
-- [ ] El modal conserva foco inicial en la descripción, `aria-pressed`, labels asociados y nombres accesibles en las fotos.
-- [ ] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
-- [ ] La limpieza deja la base y el bucket sin los datos de prueba.
+- [x] `/` muestra solo publicaciones de hoy leídas de Supabase, ordenadas de más reciente a más antigua.
+- [x] Sin publicaciones de hoy, el feed muestra “Todavía no hay publicaciones hoy” y el texto de apoyo.
+- [x] `profile.dateLabel` muestra la fecha real en español (`lunes 2 nov`), no `martes 17 jun`.
+- [x] El saludo y el conteo de niños siguen funcionando.
+- [x] La tarjeta muestra el nombre del staff autor y su inicial con una paleta determinística.
+- [x] Un post propio muestra “HH:mm · publicado por vos”; uno de otro staff muestra solo “HH:mm”.
+- [x] Un post a un niño muestra “familia de {nombre}”.
+- [x] Un post a dos o más niños muestra “sus familias”.
+- [x] Un post a “Toda la sala” muestra “toda la sala” con el ícono de megáfono en la línea de audiencia.
+- [x] El enlace “Editar” no se renderiza.
+- [x] Las fotos se ven con la proporción actual (una a ancho completo, varias en cuadrícula) y cargan desde URLs firmadas.
+- [x] “Nueva publicación” y “Compartí un momento…” abren el mismo modal en `/` y `/kids`.
+- [x] Un usuario `parent` no ve “Nueva publicación” ni “Compartí un momento…”, y `openComposer` no abre el modal.
+- [x] El modal abre sin destinatario seleccionado.
+- [x] Publicar sin destinatario muestra “Elegí al menos un destinatario” y no cierra.
+- [x] El tipo inicial sigue siendo Actividad.
+- [x] Los destinatarios son los niños activos reales del daycare, no Mateo/Sofía/Benjamín fijos.
+- [x] Se pueden seleccionar varios niños y “Toda la sala” sigue siendo excluyente.
+- [x] Se puede deseleccionar el último niño; la validación aparece al publicar.
+- [x] La descripción vacía muestra “Escribí una descripción” y el máximo sigue siendo 1000.
+- [x] Se pueden adjuntar hasta 4 imágenes; cada una se convierte a WebP de hasta 1600 px.
+- [x] Una imagen de más de 10 MB se rechaza con un mensaje claro.
+- [x] Un archivo que no se puede decodificar se rechaza sin romper el modal.
+- [x] Las miniaturas se ven y se pueden quitar; el aviso de exceso desaparece al quitar una.
+- [x] Con “Toda la sala” y un niño sin consentimiento, el selector de fotos está deshabilitado y explica el motivo.
+- [x] Con un niño sin consentimiento seleccionado, el selector de fotos está deshabilitado y nombra al niño.
+- [x] Si hay fotos y se intenta elegir un destinatario sin consentimiento, la selección se rechaza con “Quitá las fotos para elegir ese destinatario.”
+- [x] “Publicar” sube las fotos a `<daycareId>/<draftId>/<n>.webp` y llama a `create_post`.
+- [x] Mientras publica, el botón dice “Publicando…”, los campos están deshabilitados y el modal no se puede cerrar.
+- [x] Al publicar con éxito, el modal se cierra, el formulario se resetea y el post aparece primero sin recargar.
+- [x] El post persiste al recargar y al navegar a `/kids` y volver.
+- [x] Si el insert falla, el modal queda abierto con el texto y las fotos, muestra un error y borra los objetos subidos.
+- [x] Si la subida de una foto falla, se borran las anteriores y se muestra un error.
+- [x] Publicar sin fotos funciona igual.
+- [x] El Server Action traduce `children_required`, `invalid_children`, `photo_consent_missing`, `too_many_photos` e `invalid_photo_path`.
+- [x] `createPost` rechaza un cuerpo vacío, más de 1000 caracteres, tipos inválidos y más de 4 rutas.
+- [x] El bucket sigue siendo privado: una URL pública directa no devuelve la imagen.
+- [x] Un padre ve en SQL los posts de sus hijos y los de “Toda la sala”, y no los de otros niños.
+- [x] Un padre no puede publicar ni subir archivos.
+- [x] `next.config.ts` permite el host de Supabase y `/storage/v1/object/sign/**`.
+- [x] A 390×844 no hay desbordamiento horizontal y el modal alto hace scroll interno.
+- [x] El modal conserva foco inicial en la descripción, `aria-pressed`, labels asociados y nombres accesibles en las fotos.
+- [x] `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan sin errores.
+- [x] La limpieza deja la base y el bucket sin los datos de prueba.
 
 ## Decisiones tomadas y descartadas
 
@@ -257,6 +257,7 @@ type PostRow = {
 - **Sí:** `photo_consent` bloquea fotos, no solo advierte. Es una regla de privacidad de menores.
 - **Sí:** “Toda la sala” con fotos exige consentimiento de todos los niños activos. Es la única forma de garantizar que la foto no exponga a un niño sin consentimiento.
 - **Sí:** `router.refresh()` tras publicar. El post ya está en la base; el feed se vuelve a renderizar desde el servidor.
+- **Sí:** limpieza de objetos subidos mediante un Server Action acotado que valida sesión, guardería y que la ruta no esté referenciada por `post_photos`. SPEC 16 no define una política `DELETE` de Storage, así que el borrado corre en el servidor con el cliente admin y nunca toca fotos ya publicadas.
 - **Sí:** URLs firmadas de 60 minutos. El bucket es privado y las fotos de menores no quedan públicas.
 - **Sí:** `getComposerData()` en el layout. El modal es global y no necesita un viaje extra al abrirlo.
 - **Sí:** ocultar el composer a padres. SPEC 15 ya oculta el botón del sidebar; esta spec también oculta el prompt del feed.

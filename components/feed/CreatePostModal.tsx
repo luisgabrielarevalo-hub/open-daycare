@@ -1,27 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
-  CreatePostForm,
-  type PostDraft,
-} from "@/components/feed/CreatePostForm";
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type SyntheticEvent,
+} from "react";
+import { createPost, deletePostPhotos } from "@/app/feed/actions";
+import { CreatePostForm } from "@/components/feed/CreatePostForm";
 import { useFeed } from "@/components/feed/FeedProvider";
-import { postRecipients, type Post } from "@/lib/data";
+import type { PostDraft } from "@/lib/feed/posts";
+import { uploadPostPhotos } from "@/lib/feed/upload";
+import { createClient } from "@/lib/supabase/client";
 
-function getCurrentTimeLabel() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes} · publicado por vos`;
-}
+const UPLOAD_ERROR = "No pudimos subir las fotos. Intentá de nuevo.";
+const GENERIC_ERROR = "No pudimos publicar. Intentá de nuevo.";
 
 export function CreatePostModal() {
-  const { isComposerOpen, closeComposer, addPost } = useFeed();
+  const { composerData, isComposerOpen, closeComposer } = useFeed();
+  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [formKey, setFormKey] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     const dialog = dialogRef.current;
+
     if (!dialog) {
       return;
     }
@@ -39,77 +46,76 @@ export function CreatePostModal() {
   }, [isComposerOpen]);
 
   function handleBackdropClick(event: MouseEvent<HTMLDialogElement>) {
-    if (event.target === event.currentTarget) {
+    if (event.target === event.currentTarget && !isSubmitting) {
       closeComposer();
+    }
+  }
+
+  function handleCancel(event: SyntheticEvent<HTMLDialogElement>) {
+    if (isSubmitting) {
+      event.preventDefault();
     }
   }
 
   function handleClose() {
     setFormKey((key) => key + 1);
+    setIsSubmitting(false);
+    setSubmitError("");
     closeComposer();
   }
 
-  function handlePublish(draft: PostDraft) {
-    const base = {
-      id: crypto.randomUUID(),
-      kind: draft.kind,
-      time: getCurrentTimeLabel(),
-      body: draft.body,
-      reactions: 0,
-      comments: 0,
-      photos: draft.photos,
-    };
+  async function handlePublish(draft: PostDraft) {
+    if (!composerData || isSubmitting) {
+      return;
+    }
 
-    let post: Post;
+    setIsSubmitting(true);
+    setSubmitError("");
 
-    if (draft.recipientIds.includes("room")) {
-      post = {
-        ...base,
-        audienceKind: "room",
-        authorName: "Anuncio general",
-        authorInitial: "",
-        avatarBg: "#CCD8F4",
-        avatarColor: "#4E72C8",
-        audience: "toda la sala",
-      };
-    } else {
-      const selectedChildren = draft.recipientIds.flatMap((id) => {
-        const child = postRecipients.find((item) => item.id === id);
-        return child ? [child] : [];
-      });
+    const draftId = crypto.randomUUID();
+    const supabase = createClient();
 
-      if (selectedChildren.length === 0) {
+    try {
+      const upload = await uploadPostPhotos(
+        supabase,
+        composerData.daycareId,
+        draftId,
+        draft.photos,
+      );
+
+      if (upload.error) {
+        if (upload.paths.length > 0) {
+          await deletePostPhotos(upload.paths);
+        }
+        setSubmitError(UPLOAD_ERROR);
+        setIsSubmitting(false);
         return;
       }
 
-      if (selectedChildren.length === 1) {
-        const child = selectedChildren[0];
-        const firstName = child.fullName.split(" ")[0];
+      const result = await createPost({
+        kind: draft.kind,
+        recipientIds: draft.recipientIds,
+        body: draft.body,
+        photoPaths: upload.paths,
+      });
 
-        post = {
-          ...base,
-          audienceKind: "child",
-          authorName: firstName,
-          authorInitial: firstName.charAt(0),
-          avatarBg: child.avatarBg,
-          avatarColor: child.avatarColor,
-          audience: `familia de ${firstName}`,
-        };
-      } else {
-        post = {
-          ...base,
-          audienceKind: "children",
-          authorName: "Niños",
-          authorInitial: "N",
-          avatarBg: "#CCD8F4",
-          avatarColor: "#4E72C8",
-          audience: "sus familias",
-        };
+      if (!result.ok) {
+        if (upload.paths.length > 0) {
+          await deletePostPhotos(upload.paths);
+        }
+        setSubmitError(result.error);
+        setIsSubmitting(false);
+        return;
       }
-    }
 
-    addPost(post);
-    closeComposer();
+      setIsSubmitting(false);
+      setSubmitError("");
+      closeComposer();
+      router.refresh();
+    } catch {
+      setSubmitError(GENERIC_ERROR);
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -117,11 +123,18 @@ export function CreatePostModal() {
       ref={dialogRef}
       aria-labelledby="create-post-title"
       onClick={handleBackdropClick}
+      onCancel={handleCancel}
       onClose={handleClose}
       className="m-auto max-h-[calc(100dvh-48px)] w-[calc(100%-32px)] max-w-[580px] overflow-y-auto rounded-[24px] border border-border bg-modal-bg p-0 text-ink shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)] backdrop:bg-scrim"
     >
       <CreatePostForm
         key={formKey}
+        recipients={composerData?.recipients ?? []}
+        allChildrenPhotoConsent={
+          composerData?.allChildrenPhotoConsent ?? false
+        }
+        isSubmitting={isSubmitting}
+        submitError={submitError}
         onCancel={closeComposer}
         onPublish={handlePublish}
       />
